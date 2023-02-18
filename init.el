@@ -182,6 +182,8 @@
 ;; Maybe you can set it to complie dwm when editing files in .loca/src/*
 ;; Load then with M-: (hack-dir-local-variables) inside the project dir (and restart-buffer)
 
+;; TESTING FOR MAGIT
+
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
