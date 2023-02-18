@@ -185,7 +185,7 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
-(use-package magit)
-;; MAYBE add this back if you don't like new Magit windows
-;;  :custom
-;;  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+(use-package magit
+  :commands magit-status
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
