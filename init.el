@@ -182,16 +182,12 @@
 ;; Maybe you can set it to complie dwm when editing files in .loca/src/*
 ;; Load then with M-: (hack-dir-local-variables) inside the project dir (and restart-buffer)
 
-;; TESTING FOR MAGIT
-
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
 (use-package magit
   :commands magit-status
   :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-; TODO I think it works now?
-
-;; (define-key magit-status-mode-map (kbd "c") 'magit-commit-create)
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  :bind (:map magit-status-mode-map
+              ("c" . magit-commit-create)))
