@@ -192,6 +192,6 @@
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
-;; TODO check why this shit don't work without setting the keybind
+; TODO I think it works now?
 
 ;; (define-key magit-status-mode-map (kbd "c") 'magit-commit-create)
