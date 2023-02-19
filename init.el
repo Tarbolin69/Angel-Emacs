@@ -194,4 +194,4 @@
 
 ;; TODO check why this shit don't work without setting the keybind
 
-(define-key magit-status-mode-map (kbd "c") 'magit-commit-create)
+;; (define-key magit-status-mode-map (kbd "c") 'magit-commit-create)
