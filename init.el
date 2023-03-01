@@ -24,7 +24,6 @@
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-(load-theme 'doom-gruvbox-light)
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -46,6 +45,7 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
+;; END PACKAGE
 
 (use-package command-log-mode)
 
@@ -54,6 +54,8 @@
   :if (display-graphic-p))
 
 (use-package doom-themes)
+
+(load-theme 'doom-gruvbox-light)
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -76,7 +78,6 @@
   :config
   (ivy-mode 1))
 
-(global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
 
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
@@ -97,6 +98,8 @@
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.2))
+
+;;(global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
 
 (use-package ivy-rich
   :init
