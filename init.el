@@ -1,3 +1,5 @@
+(defvar angl/default-font-size 150)
+
 (setq inhibit-startup-message t)
 
 (scroll-bar-mode -1)  ; Disable visible scrollbar
@@ -12,7 +14,10 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
-(set-face-attribute 'default nil :font "Iosevka" :height 130)
+(set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
+(set-face-attribute 'fixed-pitch nil :font "Iosevka" :height 240)
+(set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height 160 :weight 'regular)
+
 
 (column-number-mode)
 (global-display-line-numbers-mode t)
@@ -194,3 +199,44 @@
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :bind (:map magit-status-mode-map
               ("c" . magit-commit-create)))
+
+(defun angl/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (visual-line-mode 1))
+
+(use-package org
+  :hook (org-mode . angl/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾"
+	org-hide-emphasis-markers t))
+
+(use-package org-bullets
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(with-eval-after-load 'org-faces
+(set-face-attribute 'org-document-title nil :font "Iosevka Comfy Duo" :weight 'bold :height 1.3)
+(dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Iosevka Comfy Duo" :weight 'regular :height (cdr face))))
+
+(defun angl/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . angl/org-mode-visual-fill))
