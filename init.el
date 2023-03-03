@@ -96,7 +96,7 @@
 (use-package doom-modeline
   :ensure t
   :hook (after-init . doom-modeline-mode)
-  :custom ((doom-modeline-height 30)))
+  :custom ((doom-modeline-height 40)))
 
 (use-package which-key
   :init (which-key-mode)
@@ -208,8 +208,13 @@
 (use-package org
   :hook (org-mode . angl/org-mode-setup)
   :config
-  (setq org-ellipsis " ▾"
-	org-hide-emphasis-markers t))
+  (setq org-ellipsis " ▾")
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time) ;; TODO Maybe change it to "note" to add thoughts on stuff in uni
+  (setq org-log-into-drawer t)
+  (setq org-agenda-files
+	      '("~/Org/Tasks.org"))
+	org-hide-emphasis-markers t)
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
