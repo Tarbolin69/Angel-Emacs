@@ -1,4 +1,4 @@
-(defvar angl/default-font-size 150)
+(defvar angl/default-font-size 140)
 
 (setq inhibit-startup-message t)
 
@@ -21,6 +21,7 @@
 
 (column-number-mode)
 (global-display-line-numbers-mode t)
+(setq display-line-numbers 'relative)
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
