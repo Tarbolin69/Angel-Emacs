@@ -1,5 +1,8 @@
 (defvar angl/default-font-size 140)
 
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
+
 (setq inhibit-startup-message t)
 
 (scroll-bar-mode -1)  ; Disable visible scrollbar
@@ -11,13 +14,9 @@
 
 (setq visible-bell t) ; Set up the visible bell
 
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
-
 (set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
 (set-face-attribute 'fixed-pitch nil :font "Iosevka" :height 240)
 (set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height 160 :weight 'regular)
-
 
 (column-number-mode)
 (global-display-line-numbers-mode t)
@@ -29,7 +28,6 @@
 		shell-mode-hook
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -53,8 +51,6 @@
 (setq use-package-always-ensure t)
 ;; END PACKAGE
 
-(use-package command-log-mode)
-
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
@@ -62,6 +58,11 @@
 (use-package doom-themes)
 
 (load-theme 'doom-gruvbox-light)
+
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode)
+  :custom ((doom-modeline-height 40)))
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -84,6 +85,10 @@
   :config
   (ivy-mode 1))
 
+(use-package ivy-rich
+  :init
+  (ivy-rich-mode 1))
+
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
 	 ("C-x b" . counsel-ibuffer)
@@ -93,22 +98,11 @@
   :config
   (setq ivy-initial-inputs-alist nil))
 
-(use-package doom-modeline
-  :ensure t
-  :hook (after-init . doom-modeline-mode)
-  :custom ((doom-modeline-height 40)))
-
 (use-package which-key
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.2))
-
-;;(global-set-key (kbd "C-M-j") 'counsel-switch-buffer)
-
-(use-package ivy-rich
-  :init
-  (ivy-rich-mode 1))
 
 (use-package helpful
   :ensure t
@@ -212,7 +206,14 @@
 	'("~/Org/Tasks.org"
 	  "~/Org/Cumpleaños.org"
 	  "~/Org/Habitos.org"))
-	org-hide-emphasis-markers t)
+  org-hide-emphasis-markers t)
+
+(require 'org-tempo)
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
+(add-to-list 'org-structure-template-alist '("s" . "src"))
+
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit)
   (setq org-habit-graph-column 60)
