@@ -1,7 +1,22 @@
-(defvar angl/default-font-size 140)
+(defun efs/org-babel-tangle-config ()
+  (when (string-equal (file-name-directory (buffer-file-name))
+                      (expand-file-name user-emacs-directory))
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+(org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+      (python . t)))
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
+
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+(defvar angl/default-font-size 140)
 
 (setq inhibit-startup-message t)
 
@@ -14,25 +29,21 @@
 
 (setq visible-bell t) ; Set up the visible bell
 
-(set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
-(set-face-attribute 'fixed-pitch nil :font "Iosevka" :height 240)
-(set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height 160 :weight 'regular)
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                shell-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (column-number-mode)
 (global-display-line-numbers-mode t)
 (setq display-line-numbers 'relative)
 
-;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
-		term-mode-hook
-		shell-mode-hook
-		eshell-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+(set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
+(set-face-attribute 'fixed-pitch nil :font "Iosevka" :height 240)
+(set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height 160 :weight 'regular)
 
-;; Make ESC quit prompts
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
-;; Initialize package sources
 (require 'package)
 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
@@ -49,7 +60,6 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
-;; END PACKAGE
 
 (use-package all-the-icons
   :ensure t
@@ -59,44 +69,43 @@
 
 (load-theme 'doom-gruvbox-light)
 
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
 (use-package doom-modeline
   :ensure t
   :hook (after-init . doom-modeline-mode)
   :custom ((doom-modeline-height 40)))
 
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
 (use-package ivy
   :diminish
   :bind (("C-s" . swiper)
-	 :map ivy-minibuffer-map
-	 ("TAB" . ivy-alt-done)
-	 ("C-l" . ivy-alt-done)
-	 ("C-j" . ivy-next-line)
-	 ("C-k" . ivy-previous-line)
-	 :map ivy-switch-buffer-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-l" . ivy-done)
-	 ("C-d" . ivy-switch-buffer-kill)
-	 :map ivy-reverse-i-search-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-d" . ivy-reverse-i-search-kill))
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill)
+         :map ivy-reverse-i-search-map
+         ("C-k" . ivy-previous-line)
+         ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
 
-(use-package ivy-rich
-  :init
-  (ivy-rich-mode 1))
-
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
-	 ("C-x b" . counsel-ibuffer)
-	 ("C-x C-f" . counsel-find-file)
-	 :map minibuffer-local-map
-	 ("C-r" . 'counsel-buffer-history))
+         ("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-buffer-history))
   :config
   (setq ivy-initial-inputs-alist nil))
+(use-package ivy-rich
+:init
+(ivy-rich-mode 1))
 
 (use-package which-key
   :init (which-key-mode)
@@ -115,9 +124,6 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-(general-define-key
- "C-M-j" 'counsel-switch-buffer)
-
 (use-package general
   :after evil
   :config
@@ -126,8 +132,10 @@
     :prefix "SPC"
     :global-prefix "C-SPC")
   (angl/leader-keys
-   "v" '(:ignore t :which-key "toggles")
-   "vt" '(counsel-load-theme :which-key "choose theme")))
+    "v" '(:ignore t :which-key "toggles")
+    "vt" '(counsel-load-theme :which-key "choose theme")))
+(general-define-key
+ "C-M-j" 'counsel-switch-buffer)
 
 (use-package evil
   :init
@@ -150,7 +158,6 @@
   :config
   (evil-collection-init))
 
-;; ----------------- Configure Hydras later for Git Actions
 (use-package hydra
   :defer t)
 
@@ -162,7 +169,6 @@
 
 (angl/leader-keys
   "ts" '(hydra-text-scale/body :which-key "scale text"))
-;; ----------------- And set them up using leader-keys and such ^^^
 
 (use-package projectile
   :diminish projectile-mode
@@ -203,9 +209,9 @@
   (setq org-log-done 'time) ;; TODO Maybe change it to "note" to add thoughts on stuff in uni
   (setq org-log-into-drawer t)
   (setq org-agenda-files
-	'("~/Org/Tasks.org"
-	  "~/Org/Cumpleaños.org"
-	  "~/Org/Habitos.org"))
+        '("~/Org/Tasks.org"
+          "~/Org/Cumpleaños.org"
+          "~/Org/Habitos.org"))
   org-hide-emphasis-markers t)
 
 (require 'org-tempo)
@@ -214,7 +220,7 @@
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
 (add-to-list 'org-structure-template-alist '("s" . "src"))
 
-  (require 'org-habit)
+(require 'org-habit)
   (add-to-list 'org-modules 'org-habit)
   (setq org-habit-graph-column 60)
 (setq org-todo-keywords
@@ -228,7 +234,6 @@
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
 ;; MAYBE ADD LATER CAPTURE TEMPLATES
-
 ;; Configure custom agenda views TODO Traducir todo esto al español
   (setq org-agenda-custom-commands
    '(("d" "Tablero"
@@ -338,3 +343,40 @@
 
 (use-package visual-fill-column
   :hook (org-mode . angl/org-mode-visual-fill))
+
+(use-package corfu
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.0)
+  (corfu-quit-at-boundary 'separator)
+  (corfu-echo-documentation 0.25)
+  (corfu-preview-current 'insert)
+  (corfu-preselect-first nil)
+  :bind (:map corfu-map
+              ;;("M-SCP"   . corfu-insert-separator)
+              ("RET"     . nil)
+              ("TAB"     . corfu-next)
+              ([tab]     . corfu-next)
+              ("S-TAB"   . corfu-previous)
+              ([backtab] . corfu-previous)
+              ("S-<return>" . corfu-insert))
+  :init
+  ;; start corfu everywhere
+  (global-corfu-mode)
+  ;; save completion to history
+  (corfu-history-mode)
+  :config
+  (add-hook 'eshell-mode-hook
+            (lambda () (setq-local corfu-quit-at-boundary t
+                                   corfu-quit-no-match t
+                                   corfu-auto nil)
+              (corfu-mode))))
+
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-c l") ;; Puede ser "C-l" ó "s-l"
+  :config
+  (lsp-enable-which-key-integration t))
