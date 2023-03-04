@@ -132,8 +132,8 @@
     :prefix "SPC"
     :global-prefix "C-SPC")
   (angl/leader-keys
-   "t" '(:ignore t :which-key "toggles")
-   "tt" '(counsel-load-theme :which-key "choose theme")))
+   "v" '(:ignore t :which-key "toggles")
+   "vt" '(counsel-load-theme :which-key "choose theme")))
 
 (use-package evil
   :init
@@ -169,11 +169,6 @@
 (angl/leader-keys
   "ts" '(hydra-text-scale/body :which-key "scale text"))
 ;; ----------------- And set them up using leader-keys and such ^^^
-
-(angl/leader-keys
-   "o" '(:ignore t :which-key "Org Actions")
-   "oA" '(org-agenda :which-key "Open Org Agenda")
-   "ot" '(counsel-org-tag :which-key "Counsel Tags"))
 
 (use-package projectile
   :diminish projectile-mode
@@ -215,11 +210,24 @@
   (setq org-log-into-drawer t)
   (setq org-agenda-files
 	'("~/Org/Tasks.org"
-	  "~/Org/Cumpleaños.org"))
+	  "~/Org/Cumpleaños.org"
+	  "~/Org/Habitos.org"))
 	org-hide-emphasis-markers t)
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
 (setq org-todo-keywords
     '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
       (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+(setq org-refile-targets
+      '(("Archive.org" :maxlevel . 1)
+        ("Tasks.org" :maxlevel . 1)))
+;; Save Org files after refiling
+(advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+;; MAYBE ADD LATER CAPTURE TEMPLATES
+
 ;; Configure custom agenda views TODO Traducir todo esto al español
   (setq org-agenda-custom-commands
    '(("d" "Tablero"
@@ -267,6 +275,39 @@
       (todo "CANC"
             ((org-agenda-overriding-header "Cancelled Projects")
              (org-agenda-files org-agenda-files)))))))
+
+(setq org-capture-templates
+    `(("t" "Tareas / Projectos")
+      ("tt" "Tarea" entry (file+olp "~/Org/Tasks.org" "Transitorias")
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+      ("j" "Entradas de Diario")
+      ("jj" "Diario" entry
+           (file+olp+datetree "~/Org/Diario.org")
+           "\n* %<%I:%M %p> - Diario :journal:\n\n%?\n\n"
+           ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+           :clock-in :clock-resume
+           :empty-lines 1)
+      ("jm" "Reuniones" entry
+           (file+olp+datetree "~/Org/Diario.org")
+           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+           :clock-in :clock-resume
+           :empty-lines 1)
+
+      ("w" "Flujo Laboral")
+      ("we" "Revisando Email" entry (file+olp+datetree "~/Org/Diario.org")
+           "* Revisando Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+
+      ("m" "Captura de Matricas")
+      ("mw" "Peso" table-line (file+headline "~/Org/Metricas.org" "Weight")
+       "| %U | %^{Peso} | %^{Notas} |" :kill-buffer t)))
+
+(angl/leader-keys
+   "o" '(:ignore t :which-key "Acciones en Org")
+   "oA" '(org-agenda :which-key "Abrir Agenda")
+   "ot" '(counsel-org-tag :which-key "Añadir Etiquetas")
+   "oc" '(org-capture :which-key "Notas Rapidas"))
+
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
   :custom
