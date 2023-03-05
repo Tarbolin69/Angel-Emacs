@@ -14,9 +14,12 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+(setq make-backup-files nil)
+(setq auto-save-default nil)
 
-(defvar angl/default-font-size 140)
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (setq inhibit-startup-message t)
 
@@ -33,16 +36,30 @@
 (dolist (mode '(org-mode-hook
                 term-mode-hook
                 shell-mode-hook
+                treemacs-mode-hook
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (column-number-mode)
 (global-display-line-numbers-mode t)
-(setq display-line-numbers 'relative)
+(setq display-line-numbers-type 'relative)
 
+(defvar angl/default-font-size 125)
 (set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
-(set-face-attribute 'fixed-pitch nil :font "Iosevka" :height 240)
-(set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height 160 :weight 'regular)
+(set-face-attribute 'fixed-pitch nil :font "Iosevka" :height angl/default-font-size)
+(set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height angl/default-font-size :weight 'regular)
+
+(dolist (hook '(text-mode-hook))
+      (add-hook hook (lambda () (flyspell-mode 1))))
+    (setq ispell-program-name "hunspell")
+    (setq ispell-dictionary "es_AR")
+
+(use-package flyspell-correct
+    :after flyspell
+    :bind (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper)))
+
+  (use-package flyspell-correct-ivy
+    :after flyspell-correct)
 
 (require 'package)
 
@@ -66,8 +83,7 @@
   :if (display-graphic-p))
 
 (use-package doom-themes)
-
-(load-theme 'doom-gruvbox-light)
+(load-theme 'doom-solarized-light)
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -75,7 +91,33 @@
 (use-package doom-modeline
   :ensure t
   :hook (after-init . doom-modeline-mode)
-  :custom ((doom-modeline-height 40)))
+  :custom ((doom-modeline-height 35)))
+
+(use-package emojify
+  :hook (after-init . global-emojify-mode))
+(add-hook 'after-init-hook #'global-emojify-mode)
+
+(use-package dashboard
+    :ensure t
+    :init
+    (progn
+       (setq dashboard-center-content t)
+       (setq dashboard-startup-banner "~/Pictures/angel-wings.png")
+       (setq dashboard-set-file-icons t)
+       (setq dashboard-banner-logo-title "PAX VOBISCUM")
+       (setq dashboard-set-heading-icon t))
+    :config
+    (dashboard-setup-startup-hook))
+    (setq dashboard-items '((recents  . 3)
+                                 (projects . 3)
+                                 (agenda . 3)))
+(setq dashboard-footer-messages '("Α Β Ρ Α Κ Α Δ Η Β Ρ Α"))
+(setq dashboard-footer-icon (all-the-icons-wicon "sunrise"
+                                                   :height 1.1
+                                                   :v-adjust -0.05
+                                                   :face 'font-lock-keyword-face))
+
+(use-package writeroom-mode)
 
 (use-package ivy
   :diminish
@@ -195,6 +237,55 @@
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :bind (:map magit-status-mode-map
               ("c" . magit-commit-create)))
+
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump))
+  :custom ((dired-listing-switches "-agho --group-directories-first"))
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "h" 'dired-single-up-directory
+    "l" 'dired-single-buffer))
+
+(use-package dired-single
+  :commands (dired dired-jump))
+
+(use-package all-the-icons-dired
+  :if (display-graphic-p)
+  :hook (dired-mode . all-the-icons-dired-mode)
+  :config (setq all-the-icons-dired-monochrome nil))
+
+(use-package dired-open
+  :commands (dired dired-jump)
+  :config
+  ;; Doesn't work as expected!
+  ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+  (setq dired-open-extensions '(("png" . "feh")
+                                ("mkv" . "mpv"))))
+
+(use-package ranger)
+(ranger-override-dired-mode t)
+(setq ranger-show-hidden t)
+
+(use-package treemacs)
+(use-package lsp-treemacs
+  :after lsp)
+(use-package treemacs-evil
+  :after (treemacs evil)
+  :ensure t)
+
+(use-package treemacs-projectile
+  :after (treemacs projectile)
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once)
+  :ensure t)
+(add-hook 'dired-mode-hook 'treemacs-icons-dired-mode)
+(use-package treemacs-magit
+  :after (treemacs magit)
+  :ensure t)
 
 (defun angl/org-mode-setup ()
   (org-indent-mode)
@@ -374,9 +465,48 @@
                                    corfu-auto nil)
               (corfu-mode))))
 
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
+(use-package orderless
   :init
-  (setq lsp-keymap-prefix "C-c l") ;; Puede ser "C-l" ó "s-l"
+  ;; Tune the global completion style settings to your liking!
+  ;; This affects the minibuffer and non-lsp completion at point.
+  (setq completion-styles '(orderless partial-completion basic)
+        completion-category-defaults nil
+        completion-category-overrides nil))
+
+(use-package lsp-mode
+   :custom
+   (lsp-completion-provider :none)
+   :commands (lsp lsp-deferred)
+   :init
+   (defun angl/lsp-mode-setup-completion ()
+     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+           '(orderless)))
+   (setq lsp-keymap-prefix "C-c l") ;; Puede ser "C-l" ó "s-l"
+   :hook
+   (lsp-completion-mode . angl/lsp-mode-setup-completion)
+   :config
+   (lsp-enable-which-key-integration t))
+
+(use-package yasnippet
+  :ensure t
+  :bind
+  ("C-c y s" . yas-insert-snippet)
+  ("C-c y v" . yas-visit-snippet-file)
   :config
-  (lsp-enable-which-key-integration t))
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
+  (yas-global-mode 1))
+
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
+(setq gc-cons-threshold 100000000)
+
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2))
+
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp-deferred))))  ; or lsp-deferred
