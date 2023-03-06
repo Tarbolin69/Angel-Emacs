@@ -1,16 +1,3 @@
-(defun efs/org-babel-tangle-config ()
-  (when (string-equal (file-name-directory (buffer-file-name))
-                      (expand-file-name user-emacs-directory))
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-
-(org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-      (python . t)))
-
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
@@ -44,10 +31,33 @@
 (global-display-line-numbers-mode t)
 (setq display-line-numbers-type 'relative)
 
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(straight-use-package 'use-package)
+(straight-use-package 'org)
+
+(setq straight-use-package-by-default t)
+
 (defvar angl/default-font-size 125)
 (set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
 (set-face-attribute 'fixed-pitch nil :font "Iosevka" :height angl/default-font-size)
 (set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height angl/default-font-size :weight 'regular)
+
+(org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+      (python . t)))
 
 (dolist (hook '(text-mode-hook))
       (add-hook hook (lambda () (flyspell-mode 1))))
@@ -61,25 +71,8 @@
   (use-package flyspell-correct-ivy
     :after flyspell-correct)
 
-(require 'package)
-
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ("org" . "https://orgmode.org/elpa/")
-			 ("elpa" . "https://elpa.gnu.org/packages/")))
-
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
-
-;; Intialize use-package on non-linux platforms
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-
-(require 'use-package)
-(setq use-package-always-ensure t)
-
 (use-package all-the-icons
-  :ensure t
+  :straight t
   :if (display-graphic-p))
 
 (use-package doom-themes)
@@ -89,16 +82,19 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package doom-modeline
-  :ensure t
+  :straight t
   :hook (after-init . doom-modeline-mode)
   :custom ((doom-modeline-height 35)))
+
+(straight-use-package
+ '(screenshot :type git :host github :repo "tecosaur/screenshot"))
 
 (use-package emojify
   :hook (after-init . global-emojify-mode))
 (add-hook 'after-init-hook #'global-emojify-mode)
 
 (use-package dashboard
-    :ensure t
+    :straight t
     :init
     (progn
        (setq dashboard-center-content t)
@@ -156,7 +152,7 @@
   (setq which-key-idle-delay 0.2))
 
 (use-package helpful
-  :ensure t
+  :straight t
   :custom
   (counsel-describe-function-function #'helpful-callable)
   (counsel-describe-variable-function #'helpful-variable)
@@ -239,7 +235,7 @@
               ("c" . magit-commit-create)))
 
 (use-package dired
-  :ensure nil
+  :straight nil
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump))
   :custom ((dired-listing-switches "-agho --group-directories-first"))
@@ -273,19 +269,19 @@
   :after lsp)
 (use-package treemacs-evil
   :after (treemacs evil)
-  :ensure t)
+  :straight t)
 
 (use-package treemacs-projectile
   :after (treemacs projectile)
-  :ensure t)
+  :straight t)
 
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
+  :straight t)
 (add-hook 'dired-mode-hook 'treemacs-icons-dired-mode)
 (use-package treemacs-magit
   :after (treemacs magit)
-  :ensure t)
+  :straight t)
 
 (defun angl/org-mode-setup ()
   (org-indent-mode)
@@ -435,6 +431,14 @@
 (use-package visual-fill-column
   :hook (org-mode . angl/org-mode-visual-fill))
 
+(defun efs/org-babel-tangle-config ()
+  (when (string-equal (file-name-directory (buffer-file-name))
+                      (expand-file-name user-emacs-directory))
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
 (use-package corfu
   :custom
   (corfu-cycle t)
@@ -454,10 +458,7 @@
               ([backtab] . corfu-previous)
               ("S-<return>" . corfu-insert))
   :init
-  ;; start corfu everywhere
   (global-corfu-mode)
-  ;; save completion to history
-  (corfu-history-mode)
   :config
   (add-hook 'eshell-mode-hook
             (lambda () (setq-local corfu-quit-at-boundary t
@@ -488,7 +489,7 @@
    (lsp-enable-which-key-integration t))
 
 (use-package yasnippet
-  :ensure t
+  :straight t
   :bind
   ("C-c y s" . yas-insert-snippet)
   ("C-c y v" . yas-visit-snippet-file)
@@ -506,7 +507,7 @@
   (setq typescript-indent-level 2))
 
 (use-package lsp-pyright
-  :ensure t
+  :straight t
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp-deferred))))  ; or lsp-deferred
