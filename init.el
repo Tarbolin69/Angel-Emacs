@@ -23,6 +23,7 @@
 (dolist (mode '(org-mode-hook
                 term-mode-hook
                 shell-mode-hook
+                markdown-mode-hook
                 treemacs-mode-hook
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
@@ -34,7 +35,7 @@
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
+       (bootstrap-version 6))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
@@ -47,7 +48,12 @@
 (straight-use-package 'use-package)
 (straight-use-package 'org)
 
+
 (setq straight-use-package-by-default t)
+
+(use-package mixed-pitch
+  :hook
+  (text-mode . mixed-pitch-mode))
 
 (defvar angl/default-font-size 125)
 (set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
@@ -57,7 +63,7 @@
 (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
-      (python . t)))
+     (python . t)))
 
 (dolist (hook '(text-mode-hook))
       (add-hook hook (lambda () (flyspell-mode 1))))
@@ -71,12 +77,44 @@
   (use-package flyspell-correct-ivy
     :after flyspell-correct)
 
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.2))
+
+(use-package helpful
+  :straight t
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
+
+(use-package general
+  :after evil
+  :config
+  (general-create-definer angl/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+  (angl/leader-keys
+    "v" '(:ignore t :which-key "toggles")
+    "vt" '(counsel-load-theme :which-key "choose theme")))
+(general-define-key
+ "C-M-j" 'counsel-switch-buffer)
+
 (use-package all-the-icons
   :straight t
   :if (display-graphic-p))
 
 (use-package doom-themes)
-(load-theme 'doom-solarized-light)
+
+(use-package solaire-mode)
+(solaire-global-mode +1)
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -88,6 +126,8 @@
 
 (straight-use-package
  '(screenshot :type git :host github :repo "tecosaur/screenshot"))
+
+(load-theme 'doom-solarized-light :no-confirm)
 
 (use-package emojify
   :hook (after-init . global-emojify-mode))
@@ -144,36 +184,6 @@
 (use-package ivy-rich
 :init
 (ivy-rich-mode 1))
-
-(use-package which-key
-  :init (which-key-mode)
-  :diminish which-key-mode
-  :config
-  (setq which-key-idle-delay 0.2))
-
-(use-package helpful
-  :straight t
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
-  :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
-
-(use-package general
-  :after evil
-  :config
-  (general-create-definer angl/leader-keys
-    :keymaps '(normal insert visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-  (angl/leader-keys
-    "v" '(:ignore t :which-key "toggles")
-    "vt" '(counsel-load-theme :which-key "choose theme")))
-(general-define-key
- "C-M-j" 'counsel-switch-buffer)
 
 (use-package evil
   :init
@@ -260,10 +270,6 @@
   (setq dired-open-extensions '(("png" . "feh")
                                 ("mkv" . "mpv"))))
 
-(use-package ranger)
-(ranger-override-dired-mode t)
-(setq ranger-show-hidden t)
-
 (use-package treemacs)
 (use-package lsp-treemacs
   :after lsp)
@@ -300,6 +306,24 @@
           "~/Org/Cumpleaños.org"
           "~/Org/Habitos.org"))
   org-hide-emphasis-markers t)
+
+(use-package toc-org)
+(if (require 'toc-org nil t)
+    (progn
+      (add-hook 'org-mode-hook 'toc-org-mode))
+  (warn "toc-org not found"))
+
+(use-package org-modern)
+
+(global-org-modern-mode)
+(setq org-modern-star '("✢" "✿" "❁" "✾" "❀" "✤" "❖"))
+
+(use-package org-fancy-priorities
+  :ensure t
+  :hook
+  (org-mode . org-fancy-priorities-mode)
+  :config
+  (setq org-fancy-priorities-list '("⚠" "‼" "❗")))
 
 (require 'org-tempo)
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
@@ -395,16 +419,10 @@
       ("mw" "Peso" table-line (file+headline "~/Org/Metricas.org" "Weight")
        "| %U | %^{Peso} | %^{Notas} |" :kill-buffer t)))
 
-(angl/leader-keys
-   "o" '(:ignore t :which-key "Acciones en Org")
-   "oA" '(org-agenda :which-key "Abrir Agenda")
-   "ot" '(counsel-org-tag :which-key "Añadir Etiquetas")
-   "oc" '(org-capture :which-key "Notas Rapidas"))
-
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
   :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+  (org-bullets-bullet-list '("✢" "✿" "❁" "✾" "❀" "✤" "❖")))
 
   ;; Replace list hyphen with dot
   (font-lock-add-keywords 'org-mode
@@ -459,12 +477,16 @@
               ("S-<return>" . corfu-insert))
   :init
   (global-corfu-mode)
+  (corfu-popupinfo-mode)
+  (corfu-history-mode)
   :config
   (add-hook 'eshell-mode-hook
             (lambda () (setq-local corfu-quit-at-boundary t
                                    corfu-quit-no-match t
                                    corfu-auto nil)
               (corfu-mode))))
+
+(setq corfu-popupinfo-delay (cons t 0.0))
 
 (use-package orderless
   :init
@@ -511,3 +533,13 @@
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp-deferred))))  ; or lsp-deferred
+
+(angl/leader-keys
+  ;; Acciones en Org
+  "o" '(:ignore t :which-key "Acciones en Org")
+  "oA" '(org-agenda :which-key "Abrir Agenda")
+  "ot" '(counsel-org-tag :which-key "Añadir Etiquetas")
+  "oc" '(org-capture :which-key "Notas Rapidas")
+  ;; Herramientas de Escritura     
+  "w" '(:ignore t :which-key "Herramientas de Escritura")
+  "wr" '(writeroom-mode :which-key "Alternar Modo de Escritura"))
