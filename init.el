@@ -10,16 +10,16 @@
 
 (setq inhibit-startup-message t)
 
-(scroll-bar-mode -1)  ; Disable visible scrollbar
-(tool-bar-mode -1)    ; Disable the toolbar
-(tooltip-mode -1)     ; Disable tooltips
-(set-fringe-mode 10)  ; Give some breathing room
+(scroll-bar-mode -1)  ; Oculta la barra de desplazamiento
+(tool-bar-mode -1)    ; Oculta la barra de herramientas
+(tooltip-mode -1)     ; Oculta en menu de opciones
+(set-fringe-mode 10)  ; Añade un poco de espacio a los costados de la pantalla
 
-(menu-bar-mode -1)    ; Disable the menu bar
+(menu-bar-mode -1)    ; Desactiva en menu
 
-(setq visible-bell t) ; Set up the visible bell
+(setq visible-bell t) ; Notificaion visual de campana
 
-;; Disable line numbers for some modes
+;; Desactiva números de linea para ciertos modos
 (dolist (mode '(org-mode-hook
                 term-mode-hook
                 shell-mode-hook
@@ -28,6 +28,7 @@
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
+;; Anade números de linea relativos
 (column-number-mode)
 (global-display-line-numbers-mode t)
 (setq display-line-numbers-type 'relative)
@@ -48,14 +49,15 @@
 (straight-use-package 'use-package)
 (straight-use-package 'org)
 
-
+;; Evita tener que escribir ":straight t" cada vez que se llama use-package
 (setq straight-use-package-by-default t)
 
 (use-package mixed-pitch
   :hook
   (text-mode . mixed-pitch-mode))
-
+;; Esto define el tamaño de fuenta global
 (defvar angl/default-font-size 125)
+
 (set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
 (set-face-attribute 'fixed-pitch nil :font "Iosevka" :height angl/default-font-size)
 (set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height angl/default-font-size :weight 'regular)
@@ -101,32 +103,41 @@
     :keymaps '(normal insert visual emacs)
     :prefix "SPC"
     :global-prefix "C-SPC")
+  ;; Formato general para combinaciones. Mas al final.
   (angl/leader-keys
-    "v" '(:ignore t :which-key "toggles")
-    "vt" '(counsel-load-theme :which-key "choose theme")))
+    "v" '(:ignore t :which-key "Alternar")
+    "vt" '(counsel-load-theme :which-key "Elejir Tema")))
 (general-define-key
+ ;; Usa esto para alternar entre buffers
  "C-M-j" 'counsel-switch-buffer)
 
+;; Añade iconos para diferentes cosas
 (use-package all-the-icons
   :straight t
   :if (display-graphic-p))
 
+;; Como 70 temas diferentes
 (use-package doom-themes)
 
+;; Diferencia visual entre buffers reales y temporales
 (use-package solaire-mode)
 (solaire-global-mode +1)
 
+;; Para mejor diferencias las parentesis
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; La linea de modos usada por Doom Emacs
 (use-package doom-modeline
   :straight t
   :hook (after-init . doom-modeline-mode)
   :custom ((doom-modeline-height 35)))
 
+;; Termite tomar capturas de pantallas personalizadas dentro de Emacs en la region seleccionada
 (straight-use-package
  '(screenshot :type git :host github :repo "tecosaur/screenshot"))
 
+;; Configura cual tema usar (recomiendo siempre usar los proveidos por "doom-themes")
 (load-theme 'doom-solarized-light :no-confirm)
 
 (use-package emojify
@@ -138,7 +149,7 @@
     :init
     (progn
        (setq dashboard-center-content t)
-       (setq dashboard-startup-banner "~/Pictures/angel-wings.png")
+       (setq dashboard-startup-banner "~/.emacs.d/imagenes/angel.png")
        (setq dashboard-set-file-icons t)
        (setq dashboard-banner-logo-title "PAX VOBISCUM")
        (setq dashboard-set-heading-icon t))
@@ -194,13 +205,13 @@
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
 
-  ;; Use visual line motions even outside of visual-line-mode buffers
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
 
+;; Varias integraciones adicionales para ciertos modos
 (use-package evil-collection
   :after evil
   :config
@@ -210,13 +221,13 @@
   :defer t)
 
 (defhydra hydra-text-scale (:timeout 1)
-  "scale text"
-  ("j" text-scale-increase "in")
-  ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
+  "tamaño del texto"
+  ("j" text-scale-increase "acercar")
+  ("k" text-scale-decrease "alejar")
+  ("f" nil "salir" :exit t))
 
 (angl/leader-keys
-  "ts" '(hydra-text-scale/body :which-key "scale text"))
+  "ts" '(hydra-text-scale/body :which-key "tamaño del texto"))
 
 (use-package projectile
   :diminish projectile-mode
@@ -225,14 +236,9 @@
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/Programing")
+  (when (file-directory-p "~/Programing") ;; Cambiar al tuyo
     (setq projectile-project-search-path '("~/Programing")))
   (setq projectile-switch-project-action #'project-dired))
-
-;; TODO projectile integration with ivy for my projectes using counsel-projectile
-;; Do so with C-c p E and set variables like "projectile-project-run-cmd" => spago run or smth
-;; Maybe you can set it to complie dwm when editing files in .loca/src/*
-;; Load then with M-: (hack-dir-local-variables) inside the project dir (and restart-buffer)
 
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
@@ -265,8 +271,6 @@
 (use-package dired-open
   :commands (dired dired-jump)
   :config
-  ;; Doesn't work as expected!
-  ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
   (setq dired-open-extensions '(("png" . "feh")
                                 ("mkv" . "mpv"))))
 
@@ -299,10 +303,11 @@
   :config
   (setq org-ellipsis " ▾")
   (setq org-agenda-start-with-log-mode t)
-  (setq org-log-done 'time) ;; TODO Maybe change it to "note" to add thoughts on stuff in uni
+  (setq org-log-done 'time)
   (setq org-log-into-drawer t)
+  ;; Archivos que se relacionan con la agenda
   (setq org-agenda-files
-        '("~/Org/Tasks.org"
+        '("~/Org/Haceres.org"
           "~/Org/Cumpleaños.org"
           "~/Org/Habitos.org"))
   org-hide-emphasis-markers t)
@@ -341,11 +346,9 @@
 (setq org-refile-targets
       '(("Archive.org" :maxlevel . 1)
         ("Tasks.org" :maxlevel . 1)))
-;; Save Org files after refiling
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
 ;; MAYBE ADD LATER CAPTURE TEMPLATES
-;; Configure custom agenda views TODO Traducir todo esto al español
   (setq org-agenda-custom-commands
    '(("d" "Tablero"
      ((agenda "" ((org-deadline-warning-days 7)))
@@ -395,7 +398,7 @@
 
 (setq org-capture-templates
     `(("t" "Tareas / Projectos")
-      ("tt" "Tarea" entry (file+olp "~/Org/Tasks.org" "Transitorias")
+      ("tt" "Tarea" entry (file+olp "~/Org/Haceres.org" "Transitorias")
            "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
       ("j" "Entradas de Diario")
@@ -415,8 +418,9 @@
       ("we" "Revisando Email" entry (file+olp+datetree "~/Org/Diario.org")
            "* Revisando Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
 
-      ("m" "Captura de Matricas")
+      ("m" "Captura de Metricas")
       ("mw" "Peso" table-line (file+headline "~/Org/Metricas.org" "Weight")
+       ;; Ejemplo:
        "| %U | %^{Peso} | %^{Notas} |" :kill-buffer t)))
 
 (use-package org-bullets
@@ -424,7 +428,6 @@
   :custom
   (org-bullets-bullet-list '("✢" "✿" "❁" "✾" "❀" "✤" "❖")))
 
-  ;; Replace list hyphen with dot
   (font-lock-add-keywords 'org-mode
                           '(("^ *\\([-]\\) "
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
@@ -490,8 +493,6 @@
 
 (use-package orderless
   :init
-  ;; Tune the global completion style settings to your liking!
-  ;; This affects the minibuffer and non-lsp completion at point.
   (setq completion-styles '(orderless partial-completion basic)
         completion-category-defaults nil
         completion-category-overrides nil))
@@ -504,7 +505,7 @@
    (defun angl/lsp-mode-setup-completion ()
      (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
            '(orderless)))
-   (setq lsp-keymap-prefix "C-c l") ;; Puede ser "C-l" ó "s-l"
+   (setq lsp-keymap-prefix "C-c l") ;; Puede ser "C-l" o "s-l"
    :hook
    (lsp-completion-mode . angl/lsp-mode-setup-completion)
    :config

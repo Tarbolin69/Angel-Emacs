@@ -52,45 +52,50 @@
 - [[#atajos][Atajos]]
 
 * Prefacio
-Esta es mi configuración personal de Emacs para uso diario, ya sea para programar o para escribir.
+Esta es mi configuración personal de Emacs para uso diario, ya sea para programar o para escribir. Tiene un poco muchas cosas, pero igual se carga rápido.
+
+La fuente tipográfica usada en esta configuración es [[https://github.com/be5invis/Iosevka][Iosevka]] y [[https://github.com/protesilaos/iosevka-comfy][Iosevka Comfy]]. Para la corrección gramática se usa Hunspell, asi que han de descargar el diccionario de Hunspell que les convenga y configurarlo mas abajo.
 
 * Arreglar custom.org
+Este, mas que nada, es para evitar que Emacs añada basura en tu configuración. No te preocupes por este archivo. No lo mires y no existe.
 #+begin_src emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 #+end_src
 
 * Eliminar archivos temporales
+Evita que Emacs haga archivos temporales (e.j init.el --> init-el~). En ciertos casos, es útil el tener un "salvaboludo" de tus archivos, pero a mi no me gusta.
 #+begin_src emacs-lisp
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 #+end_src
 
 * Simplificar "yes/no"
+Hace que las confirmaciones sean mas rápidas.
 #+begin_src emacs-lisp
 (defalias 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
 * Tecla de escape
+Salí de cualquier cagada en la que metiste apretando el botón de Escape.
 #+begin_src emacs-lisp
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 #+end_src
 
 * Configuración Visual Basica
 #+begin_src emacs-lisp
-
   (setq inhibit-startup-message t)
 
-  (scroll-bar-mode -1)  ; Disable visible scrollbar
-  (tool-bar-mode -1)    ; Disable the toolbar
-  (tooltip-mode -1)     ; Disable tooltips
-  (set-fringe-mode 10)  ; Give some breathing room
+  (scroll-bar-mode -1)  ; Oculta la barra de desplazamiento
+  (tool-bar-mode -1)    ; Oculta la barra de herramientas
+  (tooltip-mode -1)     ; Oculta en menu de opciones
+  (set-fringe-mode 10)  ; Añade un poco de espacio a los costados de la pantalla
 
-  (menu-bar-mode -1)    ; Disable the menu bar
+  (menu-bar-mode -1)    ; Desactiva en menu
 
-  (setq visible-bell t) ; Set up the visible bell
+  (setq visible-bell t) ; Notificaion visual de campana
 
-  ;; Disable line numbers for some modes
+  ;; Desactiva números de linea para ciertos modos
   (dolist (mode '(org-mode-hook
                   term-mode-hook
                   shell-mode-hook
@@ -99,13 +104,14 @@ Esta es mi configuración personal de Emacs para uso diario, ya sea para program
                   eshell-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
+  ;; Anade números de linea relativos
   (column-number-mode)
   (global-display-line-numbers-mode t)
   (setq display-line-numbers-type 'relative)
 #+end_src
 
 * Administrador de Paquetes - straight.el
-Tanto "use-package" como "org" son requeridos justo después de inicializar straight.el para prevenir problemas al iniciar Emacs.
+Una manera diferente en la que se descarga e inicializar paquetes para Emacs en vez de package.el. Permite descargar paquetes de mas fuentes, y clona sus repositorios directamente en tu computadora. Tanto "use-package" (que simplifica descargas) como "org" son requeridos justo después de inicializar straight.el para prevenir problemas al iniciar Emacs.
 #+begin_src emacs-lisp
   (defvar bootstrap-version)
   (let ((bootstrap-file
@@ -123,23 +129,26 @@ Tanto "use-package" como "org" son requeridos justo después de inicializar stra
   (straight-use-package 'use-package)
   (straight-use-package 'org)
 
-
+  ;; Evita tener que escribir ":straight t" cada vez que se llama use-package
   (setq straight-use-package-by-default t)
 #+end_src
 
 * Letras
+"mixed-pitch" es usado para que se usen los diferentes tipos de fuentes mas dinamicamente en cosas como org y markdown, o al usar modos como writeroom-mode.
 #+begin_src emacs-lisp
   (use-package mixed-pitch
     :hook
     (text-mode . mixed-pitch-mode))
-
+  ;; Esto define el tamaño de fuenta global
   (defvar angl/default-font-size 125)
+
   (set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
   (set-face-attribute 'fixed-pitch nil :font "Iosevka" :height angl/default-font-size)
   (set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height angl/default-font-size :weight 'regular)
 #+end_src
 
 * Lenguajes de Babel
+Dicta cuales lenguajes se pueden compilar directamente desde un documento org. Añadan o saquen a gusto.
 #+begin_src emacs-lisp
   (org-babel-do-load-languages
      'org-babel-load-languages
@@ -147,6 +156,7 @@ Tanto "use-package" como "org" son requeridos justo después de inicializar stra
        (python . t)))
 #+end_src
 * Corrección
+Usa Hunspell con el diccionario Español Argentino. Corrijan palabras usando Control + ; (osea, <Control_Shift + .>). Tal vez lo haga mas simple en el futuro.
 #+begin_src emacs-lisp
       (dolist (hook '(text-mode-hook))
         (add-hook hook (lambda () (flyspell-mode 1))))
@@ -162,6 +172,7 @@ Tanto "use-package" como "org" son requeridos justo después de inicializar stra
 #+end_src
 
 * Teclas
+Permite crear, cambiar y nombrar combinaciones de teclas para diferentes acciones y modos. Dado que en esta configuración se usa "evil-mode", usamos la tecla de Espacio como tecla maestra.
 #+begin_src emacs-lisp
   (use-package which-key
     :init (which-key-mode)
@@ -187,41 +198,52 @@ Tanto "use-package" como "org" son requeridos justo después de inicializar stra
       :keymaps '(normal insert visual emacs)
       :prefix "SPC"
       :global-prefix "C-SPC")
+    ;; Formato general para combinaciones. Mas al final.
     (angl/leader-keys
-      "v" '(:ignore t :which-key "toggles")
-      "vt" '(counsel-load-theme :which-key "choose theme")))
+      "v" '(:ignore t :which-key "Alternar")
+      "vt" '(counsel-load-theme :which-key "Elejir Tema")))
   (general-define-key
+   ;; Usa esto para alternar entre buffers
    "C-M-j" 'counsel-switch-buffer)
 #+end_src
 
 * Alegría Visual
+Diferentes paquetes que hacen que Emacs se vea mejor.
 ** Iconos, Linea de Modos y Temas
-Siempre usa "11" para el tamaño de fuente al tomar capturas de pantalla.
+Siempre usa "11" para el tamaño de fuente al tomar capturas de pantalla con "screenshot".
 #+begin_src emacs-lisp
+  ;; Añade iconos para diferentes cosas
   (use-package all-the-icons
     :straight t
     :if (display-graphic-p))
 
+  ;; Como 70 temas diferentes
   (use-package doom-themes)
 
+  ;; Diferencia visual entre buffers reales y temporales
   (use-package solaire-mode)
   (solaire-global-mode +1)
 
+  ;; Para mejor diferencias las parentesis
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
 
+  ;; La linea de modos usada por Doom Emacs
   (use-package doom-modeline
     :straight t
     :hook (after-init . doom-modeline-mode)
     :custom ((doom-modeline-height 35)))
 
+  ;; Termite tomar capturas de pantallas personalizadas dentro de Emacs en la region seleccionada
   (straight-use-package
    '(screenshot :type git :host github :repo "tecosaur/screenshot"))
 
+  ;; Configura cual tema usar (recomiendo siempre usar los proveidos por "doom-themes")
   (load-theme 'doom-solarized-light :no-confirm)
     #+end_src
 
 ** Emojis
+:)
 #+begin_src emacs-lisp
   (use-package emojify
     :hook (after-init . global-emojify-mode))
@@ -229,13 +251,14 @@ Siempre usa "11" para el tamaño de fuente al tomar capturas de pantalla.
 #+end_src
 
 ** Tablero
+El tablero que se ve al iniciar Emacs. Cambialo a tu gusto, o no.
 #+begin_src emacs-lisp
   (use-package dashboard
     :straight t
     :init
     (progn
        (setq dashboard-center-content t)
-       (setq dashboard-startup-banner "~/Pictures/angel-wings.png")
+       (setq dashboard-startup-banner "~/.emacs.d/imagenes/angel.png")
        (setq dashboard-set-file-icons t)
        (setq dashboard-banner-logo-title "PAX VOBISCUM")
        (setq dashboard-set-heading-icon t))
@@ -252,11 +275,13 @@ Siempre usa "11" para el tamaño de fuente al tomar capturas de pantalla.
 #+end_src
 
 * Escritura
+Modo de escritura y otras utilidades que se pueden activar a elección con ciertos atajos.
 #+begin_src emacs-lisp
   (use-package writeroom-mode)
 #+end_src
 
 * Navegación con Ivy & Counsel
+Hace que cosas como M-x y otros menús y navegación se vean y manejen menor. "swiper" termine buscar dentro de un buffer de manera muy eficiente.
 #+begin_src emacs-lisp
   (use-package ivy
     :diminish
@@ -290,46 +315,48 @@ Siempre usa "11" para el tamaño de fuente al tomar capturas de pantalla.
 #+end_src
 
 * Simulador de Vim
+Permite hacer todo lo que es posible en Vim/Nvim dentro de Emacs.
 #+begin_src emacs-lisp
-(use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  :config
-  (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
 
-  ;; Use visual line motions even outside of visual-line-mode buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
 
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
+  ;; Varias integraciones adicionales para ciertos modos
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
 #+end_src
 
 * Hydra
-Tengo que configurar Hydra para Git Actions
+Permite crear combinaciones de teclas temporales para ciertos menús o acciones rápidas. La verdad es que no lo uso para nada y puede que lo saque si no le encuentro la mano.
 #+begin_src emacs-lisp
 (use-package hydra
   :defer t)
 
 (defhydra hydra-text-scale (:timeout 1)
-  "scale text"
-  ("j" text-scale-increase "in")
-  ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
+  "tamaño del texto"
+  ("j" text-scale-increase "acercar")
+  ("k" text-scale-decrease "alejar")
+  ("f" nil "salir" :exit t))
 
 (angl/leader-keys
-  "ts" '(hydra-text-scale/body :which-key "scale text"))
+  "ts" '(hydra-text-scale/body :which-key "tamaño del texto"))
 #+end_src
 
 * Manejo de Proyectos
+Usa "projectile" para manejar proyectos (toda carpeta con .git en ella).
 #+begin_src emacs-lisp
 (use-package projectile
   :diminish projectile-mode
@@ -338,20 +365,16 @@ Tengo que configurar Hydra para Git Actions
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/Programing")
+  (when (file-directory-p "~/Programing") ;; Cambiar al tuyo
     (setq projectile-project-search-path '("~/Programing")))
   (setq projectile-switch-project-action #'project-dired))
-
-;; TODO projectile integration with ivy for my projectes using counsel-projectile
-;; Do so with C-c p E and set variables like "projectile-project-run-cmd" => spago run or smth
-;; Maybe you can set it to complie dwm when editing files in .loca/src/*
-;; Load then with M-: (hack-dir-local-variables) inside the project dir (and restart-buffer)
 
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 #+end_src
 
 * Magit
+El porcelana de Git en Emacs. Honestamente es la manera mas simple de manejar commits y demás dentro de Emacs. La parte al final es por alguna razón "c" dentro de Magit no me funciona bien.
 #+begin_src emacs-lisp
 (use-package magit
   :commands magit-status
@@ -362,6 +385,7 @@ Tengo que configurar Hydra para Git Actions
 #+end_src
 
 * Dired
+El administrador y navegador de archivos en Emacs. Esto simplemente hace que se vea y maneje mejor.
 #+begin_src emacs-lisp
   (use-package dired
     :straight nil
@@ -384,14 +408,13 @@ Tengo que configurar Hydra para Git Actions
   (use-package dired-open
     :commands (dired dired-jump)
     :config
-    ;; Doesn't work as expected!
-    ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
     (setq dired-open-extensions '(("png" . "feh")
                                   ("mkv" . "mpv"))))
 
 #+end_src
 
 * Treemacs
+Un explorador de archivos en árbol que aparece en la parque izquierda de Emacs. Útil al trabajar en proyectos con muchas carpetas.
 #+begin_src emacs-lisp
   (use-package treemacs)
   (use-package lsp-treemacs
@@ -414,6 +437,7 @@ Tengo que configurar Hydra para Git Actions
 #+end_src
 
 * Org
+Todo lo que uso para que org se veo y maneje como quiero.
 ** Modos de Org
 #+begin_src emacs-lisp
 (defun angl/org-mode-setup ()
@@ -429,16 +453,18 @@ Tengo que configurar Hydra para Git Actions
     :config
     (setq org-ellipsis " ▾")
     (setq org-agenda-start-with-log-mode t)
-    (setq org-log-done 'time) ;; TODO Maybe change it to "note" to add thoughts on stuff in uni
+    (setq org-log-done 'time)
     (setq org-log-into-drawer t)
+    ;; Archivos que se relacionan con la agenda
     (setq org-agenda-files
-          '("~/Org/Tasks.org"
+          '("~/Org/Haceres.org"
             "~/Org/Cumpleaños.org"
             "~/Org/Habitos.org"))
     org-hide-emphasis-markers t)
 #+end_src
 
 ** Org TOC
+Añade una tabla de contenidos auto-manejada a Emacs.
 #+begin_src emacs-lisp
   (use-package toc-org)
   (if (require 'toc-org nil t)
@@ -448,6 +474,7 @@ Tengo que configurar Hydra para Git Actions
 #+end_src
 
 ** Org Modern
+Modo visual "moderno" para documentos org.
 #+begin_src emacs-lisp
   (use-package org-modern)
 
@@ -455,6 +482,7 @@ Tengo que configurar Hydra para Git Actions
   (setq org-modern-star '("✢" "✿" "❁" "✾" "❀" "✤" "❖"))
 #+end_src
 ** Org Fancy Priorities
+Cambia ciertos iconos de prioridad.
 #+begin_src emacs-lisp
 (use-package org-fancy-priorities
   :ensure t
@@ -464,6 +492,7 @@ Tengo que configurar Hydra para Git Actions
   (setq org-fancy-priorities-list '("⚠" "‼" "❗")))
 #+end_src
 ** Atajos de Bloque
+Para crear bloques de código mas rápidamente.
 #+begin_src emacs-lisp
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
@@ -483,13 +512,11 @@ Tengo que configurar Hydra para Git Actions
   (setq org-refile-targets
         '(("Archive.org" :maxlevel . 1)
           ("Tasks.org" :maxlevel . 1)))
-  ;; Save Org files after refiling
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
 #+end_src
 ** Org Hábitos
 #+begin_src emacs-lisp
   ;; MAYBE ADD LATER CAPTURE TEMPLATES
-  ;; Configure custom agenda views TODO Traducir todo esto al español
     (setq org-agenda-custom-commands
      '(("d" "Tablero"
        ((agenda "" ((org-deadline-warning-days 7)))
@@ -541,7 +568,7 @@ Tengo que configurar Hydra para Git Actions
 #+begin_src emacs-lisp
   (setq org-capture-templates
       `(("t" "Tareas / Projectos")
-        ("tt" "Tarea" entry (file+olp "~/Org/Tasks.org" "Transitorias")
+        ("tt" "Tarea" entry (file+olp "~/Org/Haceres.org" "Transitorias")
              "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
         ("j" "Entradas de Diario")
@@ -561,8 +588,9 @@ Tengo que configurar Hydra para Git Actions
         ("we" "Revisando Email" entry (file+olp+datetree "~/Org/Diario.org")
              "* Revisando Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
 
-        ("m" "Captura de Matricas")
+        ("m" "Captura de Metricas")
         ("mw" "Peso" table-line (file+headline "~/Org/Metricas.org" "Weight")
+         ;; Ejemplo:
          "| %U | %^{Peso} | %^{Notas} |" :kill-buffer t)))
 #+end_src
 ** Org Ajustes Visuales
@@ -572,7 +600,6 @@ Tengo que configurar Hydra para Git Actions
     :custom
     (org-bullets-bullet-list '("✢" "✿" "❁" "✾" "❀" "✤" "❖")))
 
-    ;; Replace list hyphen with dot
     (font-lock-add-keywords 'org-mode
                             '(("^ *\\([-]\\) "
                                (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
@@ -599,6 +626,7 @@ Tengo que configurar Hydra para Git Actions
 #+end_src
 
 ** Org Babel Tangle
+Actualiza init.el al guardar README.org (se puede cambiar el nombre del ultimo sin problemas).
 #+begin_src emacs-lisp
   (defun efs/org-babel-tangle-config ()
     (when (string-equal (file-name-directory (buffer-file-name))
@@ -610,7 +638,7 @@ Tengo que configurar Hydra para Git Actions
 #+end_src
 
 * Corfu
-Sistema de autocompletacion moderna con integración para LSP y Ivy.
+Sistema de autocompletacion moderno con integración para LSP y Ivy.
 #+begin_src emacs-lisp
   (use-package corfu
     :custom
@@ -650,8 +678,6 @@ Se integra con lsp-mode y Corfu para expandir sus habilidades de sugerencias.
 #+begin_src emacs-lisp
   (use-package orderless
     :init
-    ;; Tune the global completion style settings to your liking!
-    ;; This affects the minibuffer and non-lsp completion at point.
     (setq completion-styles '(orderless partial-completion basic)
           completion-category-defaults nil
           completion-category-overrides nil))
@@ -670,7 +696,7 @@ TODO: Añadir mejoras con cape.el y orderless
          (defun angl/lsp-mode-setup-completion ()
            (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
                  '(orderless)))
-         (setq lsp-keymap-prefix "C-c l") ;; Puede ser "C-l" ó "s-l"
+         (setq lsp-keymap-prefix "C-c l") ;; Puede ser "C-l" o "s-l"
          :hook
          (lsp-completion-mode . angl/lsp-mode-setup-completion)
          :config
@@ -699,6 +725,7 @@ Dos configuraciones que mejoran el rendimiento de LSP en Emacs.
 #+end_src
 
 * Lenguages
+Acá se añaden los lenguajes que están configurados con LSP. Añadir o quitar a gusto.
 ** Typescript
 #+begin_src emacs-lisp
   (use-package typescript-mode
@@ -718,6 +745,7 @@ Dos configuraciones que mejoran el rendimiento de LSP en Emacs.
 #+end_src
 
 * Atajos
+Todos los atajos se encuentran aca. Cambiar a gusto.
 #+begin_src emacs-lisp
   (angl/leader-keys
     ;; Acciones en Org
