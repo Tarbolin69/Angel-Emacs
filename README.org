@@ -62,6 +62,15 @@ Esta es mi configuración personal de Emacs para uso diario, ya sea para program
 
 La fuente tipográfica usada en esta configuración es [[https://github.com/be5invis/Iosevka][Iosevka]] y [[https://github.com/protesilaos/iosevka-comfy][Iosevka Comfy]]. Para la corrección gramática se usa Hunspell, asi que han de descargar el diccionario de Hunspell que les convenga y configurarlo mas abajo.
 
+Para utilizar esta configuración, simplemente han de hacer lo siguiente en la terminal:
+#+begin_src shell
+  cd ~
+  mv .emacs.d .emacs.d.bak # o borrenlo si asi prefieren
+  git clone https://github.com/Tarbolin69/Angel-Emacs .emacs.d/
+#+end_src
+
+Después simplemente abran Emacs y dejen que los paquetes se instalen. Puede haber ciertos problemas con la instalación de Corfu, y si eso ocurre, instalenlo usando "M-x package-install" 
+
 * Arreglar custom.org
 Este, mas que nada, es para evitar que Emacs añada basura en tu configuración. No te preocupes por este archivo. No lo mires y no existe.
 #+begin_src emacs-lisp
