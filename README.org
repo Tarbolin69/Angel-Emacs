@@ -44,6 +44,7 @@
 - [[#servidores-de-lenguajes--lista-de-sugestiones][Servidores de Lenguajes & Lista de Sugestiones]]
   - [[#orderless][Orderless]]
   - [[#lsp-mode][LSP-Mode]]
+  - [[#comentarios][Comentarios]]
   - [[#yasnippet][Yasnippet]]
   - [[#mejoras-de-rendimiento-para-lsp][Mejoras de Rendimiento para LSP]]
 - [[#lenguages][Lenguages]]
@@ -702,6 +703,10 @@ Permite usar LSP en Emacs, pero por si no hace nada. Actualmente configurado par
 
 TODO: Añadir mejoras con cape.el y orderless
 #+begin_src emacs-lisp
+  (defun efs/lsp-mode-setup ()
+    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode))
+
   (use-package lsp-mode
      :custom
      (lsp-completion-provider :none)
@@ -722,6 +727,13 @@ TODO: Añadir mejoras con cape.el y orderless
     (lsp-ui-doc-position 'bottom))
 
   (use-package lsp-ivy)
+#+end_src
+
+** Comentarios
+Para comentar secciones de código
+#+begin_src emacs-lisp
+  (use-package evil-nerd-commenter
+    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 #+end_src
 
 ** Yasnippet

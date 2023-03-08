@@ -509,6 +509,10 @@
         completion-category-defaults nil
         completion-category-overrides nil))
 
+(defun efs/lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
+
 (use-package lsp-mode
    :custom
    (lsp-completion-provider :none)
@@ -529,6 +533,9 @@
   (lsp-ui-doc-position 'bottom))
 
 (use-package lsp-ivy)
+
+(use-package evil-nerd-commenter
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 (use-package yasnippet
   :straight t
