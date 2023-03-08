@@ -66,7 +66,7 @@ Para utilizar esta configuración, simplemente han de hacer lo siguiente en la t
 #+begin_src shell
   cd ~
   mv .emacs.d .emacs.d.bak # o borrenlo si asi prefieren
-  git clone https://github.com/Tarbolin69/Angel-Emacs .emacs.d/
+  git clone https://github.com/Tarbolin69/Angel-Emacs.git .emacs.d/
 #+end_src
 
 Después simplemente abran Emacs y dejen que los paquetes se instalen. Puede haber ciertos problemas con la instalación de Corfu, y si eso ocurre, instalenlo usando "M-x package-install" 
