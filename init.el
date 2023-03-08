@@ -127,6 +127,17 @@
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; Sobresalta indentamiento
+(use-package highlight-indent-guides
+  :custom
+  (highlight-indent-guides-delay 0)
+  (highlight-indent-guides-responsive t)
+  (highlight-indent-guides-method 'character)
+  ;; (highlight-indent-guides-auto-enabled t)
+  ;; (highlight-indent-guides-character ?\┆)
+  :commands highlight-indent-guides-mode
+  :hook (prog-mode  . highlight-indent-guides-mode))
+
 ;; La linea de modos usada por Doom Emacs
 (use-package doom-modeline
   :straight t
@@ -144,28 +155,111 @@
   :hook (after-init . global-emojify-mode))
 (add-hook 'after-init-hook #'global-emojify-mode)
 
+;(use-package dashboard
+;  :straight t
+;  :init
+;  (progn
+;    (setq dashboard-center-content t)
+;    (setq dashboard-startup-banner "~/.emacs.d/imagenes/angel.png")
+;    (setq dashboard-set-file-icons t)
+;    (setq dashboard-banner-logo-title "PAX VOBISCUM")
+;    (setq dashboard-set-heading-icon t))
+;  :config
+;  (dashboard-setup-startup-hook)
+;(setq dashboard-navigator-buttons
+;      `(;; line1
+;        ((,(all-the-icons-octicon "octoface" :height 1.1 :v-adjust 0.0)
+;          "Github"
+;          "Ir a Pagina de Github"
+;          (lambda (&rest _) (browse-url "https://github.com/Tarbolin69/Angel-Emacs")) nil "" " |")
+;         (,(all-the-icons-faicon "refresh" :height 1.1 :v-adjust 0.0)
+;          "Actualizar"
+;          "Actualizar Emacs"
+;          (lambda (&rest _) (straight-pull-all)) warning "" " |")
+;         (,(all-the-icons-faicon "flag" :height 1.1 :v-adjust 0.0) nil
+;          "Reportar un BUG"
+;          (lambda (&rest _) (browse-url "https://github.com/Tarbolin69/Angel-Emacs/issues/new")) error "" ""))
+;        (("" "\n" "" nil nil "" ""))
+;
+;        ;; Keybindings
+;        ((,(all-the-icons-octicon "search" :height 0.9 :v-adjust -0.1)
+;          " Buscar archivos" nil
+;          (lambda (&rest _) (counsel-find-file)) nil "" "            C-x C-f"))
+;        ((,(all-the-icons-octicon "file-directory" :height 1.0 :v-adjust -0.1)
+;          " Abrir proyecto" nil
+;          (lambda (&rest _) (counsel-projectile-switch-project)) nil "" "         C-x p d"))
+;        ((,(all-the-icons-octicon "three-bars" :height 1.1 :v-adjust -0.1)
+;          " Explorador de archivos" nil
+;          (lambda (&rest _) (counsel-projectile-switch-project)) nil "" "        C-x p D"))
+;        ((,(all-the-icons-octicon "settings" :height 0.9 :v-adjust -0.1)
+;          " Abrir configuración" nil
+;          (lambda (&rest _) (open-config-file)) nil "" "        C-c e  "))))
+;(setq dashboard-items '((recents  . 3)
+;                        (projects . 3)
+;                        (agenda . 3)))
+;(setq dashboard-footer-messages '("Α Β Ρ Α Κ Α Δ Η Β Ρ Α"))
+;
+;
+;(setq dashboard-footer-icon (all-the-icons-wicon "sunrise"
+;                                                 :height 1.1
+;                                                 :v-adjust -0.05
+;                                                 :face 'font-lock-keyword-face))
+;(setq dashboard-item-names '(("Recent Files:" . "Archivos Recientes:")
+;                             ("Projects:" . "Proyectos:")
+;                             ("Agenda for the coming week:" . "Agenda para la semana:"))))
 (use-package dashboard
-    :straight t
-    :init
-    (progn
-       (setq dashboard-center-content t)
-       (setq dashboard-startup-banner "~/.emacs.d/imagenes/angel.png")
-       (setq dashboard-set-file-icons t)
-       (setq dashboard-banner-logo-title "PAX VOBISCUM")
-       (setq dashboard-set-heading-icon t))
-    :config
-    (dashboard-setup-startup-hook))
-    (setq dashboard-items '((recents  . 3)
-                                 (projects . 3)
-                                 (agenda . 3)))
-(setq dashboard-footer-messages '("Α Β Ρ Α Κ Α Δ Η Β Ρ Α"))
-(setq dashboard-footer-icon (all-the-icons-wicon "sunrise"
-                                                   :height 1.1
-                                                   :v-adjust -0.05
-                                                   :face 'font-lock-keyword-face))
-(setq dashboard-item-names '(("Recent Files:" . "Archivos Recientes:")
-                             ("Projects:" . "Proyectos:")
-                             ("Agenda for the coming week:" . "Agenda para la semana:")))
+  :after all-the-icons
+  :init (add-hook 'dashboard-mode-hook (lambda () (setq show-trailing-whitespace nil)))
+  :custom
+  (dashboard-set-navigator t)
+  (dashboard-center-content t)
+  (dashboard-set-file-icons t)
+  (dashboard-set-heading-icons t)
+  (dashboard-image-banner-max-height 250)
+  (dashboard-banner-logo-title "[PAX VOBISCUM]")
+  (dashboard-startup-banner (concat user-emacs-directory "imagenes/angel.png"))
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-footer-icon (all-the-icons-octicon "calendar"
+                                                     :height 1.1
+                                                     :v-adjust -0.05
+                                                     :face 'font-lock-keyword-face))
+
+  (setq dashboard-navigator-buttons
+        `(
+          ((,(all-the-icons-octicon "octoface" :height 1.1 :v-adjust 0.0)
+            "Github"
+            "Ir a Angel-Emacs"
+            (lambda (&rest _) (browse-url "https://github.com/Tarbolin69/Angel-Emacs")) nil "" " |")
+           (,(all-the-icons-faicon "refresh" :height 1.1 :v-adjust 0.0)
+            "Actualizar"
+            "Actualizar Emacs"
+            (lambda (&rest _) (straight-pull-all)) warning "" " |")
+           (,(all-the-icons-faicon "flag" :height 1.1 :v-adjust 0.0) nil
+            "Reportar un BUG"
+            (lambda (&rest _) (browse-url "https://github.com/Tarbolin69/Angel-Emacs/issues/new")) error "" ""))
+          (("" "\n" "" nil nil "" ""))
+
+          ;; Keybindings
+          ((,(all-the-icons-octicon "search" :height 0.9 :v-adjust -0.1)
+            " Encontrar archivo" nil
+            (lambda (&rest _) (counsel-find-file)) nil "" "          C-x C-f"))
+          ((,(all-the-icons-octicon "file-directory" :height 1.0 :v-adjust -0.1)
+            " Abrir proyecto" nil
+            (lambda (&rest _) (counsel-projectile-switch-project)) nil "" "            C-x p d"))
+          ((,(all-the-icons-octicon "three-bars" :height 1.1 :v-adjust -0.1)
+            " Explorar proyectos" nil
+            (lambda (&rest _) (counsel-projectile-switch-project)) nil "" "        C-x p D"))))
+
+  (setq
+   dashboard-projects-backend 'project-el
+   dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name
+   dashboard-items '((recents        . 5)
+                     (projects       . 2)
+                     (bookmarks      . 5)
+                     (agenda         . 3)))
+  :custom-face
+  (dashboard-heading ((t (:foreground nil :weight bold)))))
 
 (use-package writeroom-mode)
 
@@ -198,6 +292,18 @@
 (use-package ivy-rich
 :init
 (ivy-rich-mode 1))
+
+(use-package flx
+  :after ivy
+  :defer t
+  :init
+  (setq ivy-flx-limit 10000))
+
+(use-package drag-stuff
+  :hook ((prog-mode org-mode) . drag-stuff-mode )
+  :bind
+  ("C-M-S-j" . drag-stuff-down)
+  ("C-M-S-k" . drag-stuff-up))
 
 (use-package evil
   :init
@@ -252,6 +358,16 @@
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :bind (:map magit-status-mode-map
               ("c" . magit-commit-create)))
+
+(use-package undo-tree
+  :delight
+  :bind ("C-x u" . undo-tree-visualize)
+  :hook (org-mode . undo-tree-mode)
+  :init (global-undo-tree-mode)
+  :custom
+  (undo-tree-visualizer-diff t)
+  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/var/undo-tree-hist")))
+  (undo-tree-visualizer-timestamps t))
 
 (use-package dired
   :straight nil
@@ -462,6 +578,15 @@
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+(use-package term
+  :commands term
+  :config
+  (setq explicit-shell-file-name "zsh") ;; Cambiar "zsh" a bash dependiento de tu maquina
+  (setq term-prompt-regexp "%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[red]%}]%{$reset_color%}$%b"))
+
+(use-package eterm-256color
+  :hook (term-mode . eterm-256color-mode))
 
 (use-package corfu
   :custom
