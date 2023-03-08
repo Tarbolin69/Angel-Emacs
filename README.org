@@ -6,7 +6,7 @@
 
 * Tabla de Contenidos                                                   :TOC:
 - [[#prefacio][Prefacio]]
-- [[#arreglar-customorg][Arreglar custom.org]]
+- [[#arreglar-custom-preferences][Arreglar "custom preferences"]]
 - [[#eliminar-archivos-temporales][Eliminar archivos temporales]]
 - [[#simplificar-yesno][Simplificar "yes/no"]]
 - [[#tecla-de-escape][Tecla de escape]]
@@ -71,7 +71,7 @@ Para utilizar esta configuración, simplemente han de hacer lo siguiente en la t
 
 Después simplemente abran Emacs y dejen que los paquetes se instalen. Puede haber ciertos problemas con la instalación de Corfu, y si eso ocurre, instalenlo usando "M-x package-install" 
 
-* Arreglar custom.org
+* Arreglar "custom preferences"
 Este, mas que nada, es para evitar que Emacs añada basura en tu configuración. No te preocupes por este archivo. No lo mires y no existe.
 #+begin_src emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
