@@ -6,6 +6,7 @@
 
 * Tabla de Contenidos                                                   :TOC:
 - [[#prefacio][Prefacio]]
+- [[#comenzar-el-servidor][Comenzar el servidor]]
 - [[#arreglar-custom-preferences][Arreglar "custom preferences"]]
 - [[#eliminar-archivos-temporales][Eliminar archivos temporales]]
 - [[#simplificar-yesno][Simplificar "yes/no"]]
@@ -69,7 +70,7 @@ Para utilizar esta configuración, simplemente han de hacer lo siguiente en la t
   git clone https://github.com/Tarbolin69/Angel-Emacs.git .emacs.d/
 #+end_src
 
-Después simplemente abran Emacs y dejen que los paquetes se instalen. Puede haber ciertos problemas con la instalación de Corfu, y si eso ocurre, instalenlo usando "M-x package-install" 
+Después simplemente abran Emacs y dejen que los paquetes se instalen. Puede haber ciertos problemas con la instalación de Corfu, y si eso ocurre, instalenlo usando "M-x package-install"
 
 * Arreglar "custom preferences"
 Este, mas que nada, es para evitar que Emacs añada basura en tu configuración. No te preocupes por este archivo. No lo mires y no existe.
@@ -157,9 +158,9 @@ Una manera diferente en la que se descarga e inicializar paquetes para Emacs en 
   ;; Esto define el tamaño de fuenta global
   (defvar angl/default-font-size 125)
 
-  (set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
-  (set-face-attribute 'fixed-pitch nil :font "Iosevka" :height angl/default-font-size)
-  (set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height angl/default-font-size :weight 'regular)
+  (set-face-attribute 'default nil :family "Iosevka" :height angl/default-font-size)
+  (set-face-attribute 'fixed-pitch nil :family "Iosevka" :height angl/default-font-size)
+  (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height angl/default-font-size :weight 'regular)
 #+end_src
 
 * Lenguajes de Babel
@@ -213,10 +214,10 @@ Permite crear, cambiar y nombrar combinaciones de teclas para diferentes accione
       :keymaps '(normal insert visual emacs)
       :prefix "SPC"
       :global-prefix "C-SPC")
-    ;; Formato general para combinaciones. Mas al final.
+     ;; Formato general para combinaciones. Mas al final.
     (angl/leader-keys
-      "v" '(:ignore t :which-key "Alternar")
-      "vt" '(counsel-load-theme :which-key "Elejir Tema")))
+     "v" '(:ignore t :which-key "Alternar")
+     "vt" '(counsel-load-theme :which-key "Elejir Tema")))
   (general-define-key
    ;; Usa esto para alternar entre buffers
    "C-M-j" 'counsel-switch-buffer)
@@ -332,6 +333,7 @@ El tablero que se ve al iniciar Emacs. Cambialo a tu gusto, o no.
   ;                             ("Projects:" . "Proyectos:")
   ;                             ("Agenda for the coming week:" . "Agenda para la semana:"))))
   (use-package dashboard
+    :ensure t
     :after all-the-icons
     :init (add-hook 'dashboard-mode-hook (lambda () (setq show-trailing-whitespace nil)))
     :custom
@@ -344,6 +346,8 @@ El tablero que se ve al iniciar Emacs. Cambialo a tu gusto, o no.
     (dashboard-startup-banner (concat user-emacs-directory "imagenes/angel.png"))
     :config
     (dashboard-setup-startup-hook)
+    (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+    (setq initial-buffer-choice (lambda () (dashboard-refresh-buffer)(get-buffer "*dashboard*")))
     (setq dashboard-footer-icon (all-the-icons-octicon "calendar"
                                                        :height 1.1
                                                        :v-adjust -0.05

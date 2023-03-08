@@ -58,9 +58,9 @@
 ;; Esto define el tamaño de fuenta global
 (defvar angl/default-font-size 125)
 
-(set-face-attribute 'default nil :font "Iosevka" :height angl/default-font-size)
-(set-face-attribute 'fixed-pitch nil :font "Iosevka" :height angl/default-font-size)
-(set-face-attribute 'variable-pitch nil :font "Iosevka Comfy Duo" :height angl/default-font-size :weight 'regular)
+(set-face-attribute 'default nil :family "Iosevka" :height angl/default-font-size)
+(set-face-attribute 'fixed-pitch nil :family "Iosevka" :height angl/default-font-size)
+(set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height angl/default-font-size :weight 'regular)
 
 (org-babel-do-load-languages
    'org-babel-load-languages
@@ -103,10 +103,10 @@
     :keymaps '(normal insert visual emacs)
     :prefix "SPC"
     :global-prefix "C-SPC")
-  ;; Formato general para combinaciones. Mas al final.
+   ;; Formato general para combinaciones. Mas al final.
   (angl/leader-keys
-    "v" '(:ignore t :which-key "Alternar")
-    "vt" '(counsel-load-theme :which-key "Elejir Tema")))
+   "v" '(:ignore t :which-key "Alternar")
+   "vt" '(counsel-load-theme :which-key "Elejir Tema")))
 (general-define-key
  ;; Usa esto para alternar entre buffers
  "C-M-j" 'counsel-switch-buffer)
@@ -208,6 +208,7 @@
 ;                             ("Projects:" . "Proyectos:")
 ;                             ("Agenda for the coming week:" . "Agenda para la semana:"))))
 (use-package dashboard
+  :ensure t
   :after all-the-icons
   :init (add-hook 'dashboard-mode-hook (lambda () (setq show-trailing-whitespace nil)))
   :custom
@@ -220,6 +221,8 @@
   (dashboard-startup-banner (concat user-emacs-directory "imagenes/angel.png"))
   :config
   (dashboard-setup-startup-hook)
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  (setq initial-buffer-choice (lambda () (dashboard-refresh-buffer)(get-buffer "*dashboard*")))
   (setq dashboard-footer-icon (all-the-icons-octicon "calendar"
                                                      :height 1.1
                                                      :v-adjust -0.05
