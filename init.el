@@ -163,6 +163,9 @@
                                                    :height 1.1
                                                    :v-adjust -0.05
                                                    :face 'font-lock-keyword-face))
+(setq dashboard-item-names '(("Recent Files:" . "Archivos Recientes:")
+                             ("Projects:" . "Proyectos:")
+                             ("Agenda for the coming week:" . "Agenda para la semana:")))
 
 (use-package writeroom-mode)
 
@@ -491,6 +494,15 @@
 
 (setq corfu-popupinfo-delay (cons t 0.0))
 
+;; Añade iconos para Corfu
+(use-package kind-icon
+  :ensure t
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
 (use-package orderless
   :init
   (setq completion-styles '(orderless partial-completion basic)
@@ -510,6 +522,13 @@
    (lsp-completion-mode . angl/lsp-mode-setup-completion)
    :config
    (lsp-enable-which-key-integration t))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+(use-package lsp-ivy)
 
 (use-package yasnippet
   :straight t
@@ -533,7 +552,13 @@
   :straight t
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
-                          (lsp-deferred))))  ; or lsp-deferred
+                          (lsp-deferred))))
+
+(use-package eglot)
+(require 'eglot)
+(add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
+(add-hook 'c-mode-hook 'eglot-ensure)
+(add-hook 'c++-mode-hook 'eglot-ensure)
 
 (angl/leader-keys
   ;; Acciones en Org
@@ -543,4 +568,8 @@
   "oc" '(org-capture :which-key "Notas Rapidas")
   ;; Herramientas de Escritura     
   "w" '(:ignore t :which-key "Herramientas de Escritura")
-  "wr" '(writeroom-mode :which-key "Alternar Modo de Escritura"))
+  "wr" '(writeroom-mode :which-key "Alternar Modo de Escritura")
+  ;; Elementos Visuales
+  "v" '(:ignore t :which-key "Elementos Visuales")
+  "vt" '(treemacs :which-key "Treemacs")
+  "vs" '(lsp-treemacs-symbols :which-key "LSP Treemacs"))
