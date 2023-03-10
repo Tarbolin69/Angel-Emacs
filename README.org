@@ -60,8 +60,6 @@
   - [[#python][Python]]
   - [[#cc][C/C++]]
 - [[#atajos][Atajos]]
-- [[#snee][Snee]]
-  - [[#snee-1][Snee]]
 
 * Prefacio
 Esta es mi configuración personal de Emacs para uso diario, ya sea para programar o para escribir. Tiene un poco muchas cosas, pero igual se carga rápido.
@@ -942,6 +940,3 @@ Todos los atajos se encuentran aca. Cambiar a gusto.
     "to" '(vterm-toggle-cd :which-key "Abrir vterm")
     "te" '(eshell :which-key "Abrir eshell"))
 #+end_src
-
-* Snee
-** Snee
