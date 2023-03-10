@@ -365,11 +365,6 @@
  '(org-cliplink :type git :host github :repo "rexim/org-cliplink"))
 (global-set-key (kbd "C-x p i") 'org-cliplink)
 
-(use-package org-modern)
-
-(global-org-modern-mode)
-(setq org-modern-star '("✢" "✿" "❁" "✾" "❀" "✤" "❖"))
-
 (use-package org-fancy-priorities
   :ensure t
   :hook

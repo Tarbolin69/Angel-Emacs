@@ -35,7 +35,6 @@
   - [[#paquete-org][Paquete Org]]
   - [[#org-toc][Org TOC]]
   - [[#org-cliplink][Org Cliplink]]
-  - [[#org-modern][Org Modern]]
   - [[#org-fancy-priorities][Org Fancy Priorities]]
   - [[#atajos-de-bloque][Atajos de Bloque]]
   - [[#agenda-todos][Agenda TODOs]]
@@ -269,7 +268,6 @@ Siempre usa "11" para el tamaño de fuente al tomar capturas de pantalla con "sc
   ;; Configura cual tema usar (recomiendo siempre usar los proveidos por "doom-themes")
   (load-theme 'doom-solarized-light :no-confirm)
     #+end_src
-
 ** Emojis
 :)
 #+begin_src emacs-lisp
@@ -277,7 +275,6 @@ Siempre usa "11" para el tamaño de fuente al tomar capturas de pantalla con "sc
     :hook (after-init . global-emojify-mode))
   (add-hook 'after-init-hook #'global-emojify-mode)
 #+end_src
-
 ** Tablero
 El tablero que se ve al iniciar Emacs. Cambialo a tu gusto, o no.
 #+begin_src emacs-lisp
@@ -511,7 +508,6 @@ Todo lo que uso para que org se veo y maneje como quiero.
   (variable-pitch-mode 1)
   (visual-line-mode 1))
 #+end_src
-
 ** Paquete Org
 #+begin_src emacs-lisp
   (use-package org
@@ -528,7 +524,6 @@ Todo lo que uso para que org se veo y maneje como quiero.
             "~/Org/Habitos.org"))
     org-hide-emphasis-markers t)
 #+end_src
-
 ** Org TOC
 Añade una tabla de contenidos auto-manejada a Emacs.
 #+begin_src emacs-lisp
@@ -538,21 +533,11 @@ Añade una tabla de contenidos auto-manejada a Emacs.
         (add-hook 'org-mode-hook 'toc-org-mode))
     (warn "toc-org not found"))
 #+end_src
-
 ** Org Cliplink
 #+begin_src emacs-lisp
   (straight-use-package
    '(org-cliplink :type git :host github :repo "rexim/org-cliplink"))
   (global-set-key (kbd "C-x p i") 'org-cliplink)
-#+end_src
-
-** Org Modern
-Modo visual "moderno" para documentos org.
-#+begin_src emacs-lisp
-  (use-package org-modern)
-
-  (global-org-modern-mode)
-  (setq org-modern-star '("✢" "✿" "❁" "✾" "❀" "✤" "❖"))
 #+end_src
 ** Org Fancy Priorities
 Cambia ciertos iconos de prioridad.
@@ -697,7 +682,6 @@ Para crear bloques de código mas rápidamente.
   (use-package visual-fill-column
     :hook (org-mode . angl/org-mode-visual-fill))
 #+end_src
-
 ** Org Babel Tangle
 Actualiza init.el al guardar README.org (se puede cambiar el nombre del ultimo sin problemas).
 #+begin_src emacs-lisp
@@ -735,6 +719,7 @@ Diferentes terminales para Emacs.
     (straight-use-package
      '(vterm-toggle :type git :host github :repo "jixiuf/vterm-toggle"))
 #+end_src
+
 * Corfu
 Sistema de autocompletacion moderno con integración para LSP y Ivy.
 #+begin_src emacs-lisp
@@ -789,7 +774,6 @@ Se integra con lsp-mode y Corfu para expandir sus habilidades de sugerencias.
           completion-category-defaults nil
           completion-category-overrides nil))
 #+end_src
-
 ** LSP-Mode
 Permite usar LSP en Emacs, pero por si no hace nada. Actualmente configurado para usar Corfu y orderless para autocompletamiento.
 
@@ -820,14 +804,12 @@ TODO: Añadir mejoras con cape.el y orderless
 
   (use-package lsp-ivy)
 #+end_src
-
 ** Comentarios
 Para comentar secciones de código
 #+begin_src emacs-lisp
   (use-package evil-nerd-commenter
     :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 #+end_src
-
 ** Yasnippet
 Requerido por LSP.
 #+begin_src emacs-lisp
@@ -841,7 +823,6 @@ Requerido por LSP.
           (yas-global-mode 1))
 
 #+end_src
-
 ** Mejoras de Rendimiento para LSP
 Dos configuraciones que mejoran el rendimiento de LSP en Emacs.
 #+begin_src emacs-lisp
@@ -859,7 +840,6 @@ Acá se añaden los lenguajes que están configurados con LSP. Añadir o quitar 
     :config
     (setq typescript-indent-level 2))
 #+end_src
-
 ** Python
 #+begin_src emacs-lisp
 (use-package lsp-pyright
@@ -868,7 +848,6 @@ Acá se añaden los lenguajes que están configurados con LSP. Añadir o quitar 
                           (require 'lsp-pyright)
                           (lsp-deferred))))
 #+end_src
-
 ** C/C++
 #+begin_src emacs-lisp
   (use-package eglot)
