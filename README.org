@@ -76,6 +76,8 @@ Para utilizar esta configuración, simplemente han de hacer lo siguiente en la t
 
 Después simplemente abran Emacs y dejen que los paquetes se instalen. Puede haber ciertos problemas con la instalación de Corfu, y si eso ocurre, instalenlo usando "M-x package-install"
 
+Funciona esto para MacOS o Windows? No tengo idea!
+
 * Arreglar "custom preferences"
 Este, mas que nada, es para evitar que Emacs añada basura en tu configuración. No te preocupes por este archivo. No lo mires y no existe.
 #+begin_src emacs-lisp
@@ -262,7 +264,7 @@ Siempre usa "11" para el tamaño de fuente al tomar capturas de pantalla con "sc
 
   ;; Configura cual tema usar (recomiendo siempre usar los proveidos por "doom-themes")
   (load-theme 'doom-solarized-light :no-confirm)
-    #+end_src
+#+end_src
 
 ** Emojis
 :)
@@ -561,7 +563,7 @@ Añade una tabla de contenidos auto-manejada a Emacs.
   (setq org-indent-mode-turns-on-hiding-stars nil)
 #+end_src
 ** Org Modern Indent
-Quiza me deshaga de esto si no encuentro manera alguno de acortar "#+begin..."
+Quiza me deshaga de esto si es que causa problemas en el futuro.
 #+begin_src emacs-lisp
   (use-package org-modern-indent
     :straight (org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent"))
