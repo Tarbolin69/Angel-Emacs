@@ -61,6 +61,15 @@
 (set-face-attribute 'fixed-pitch nil :family "Iosevka" :height angl/default-font-size)
 (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height angl/default-font-size :weight 'regular)
 
+(use-package ligature
+  :load-path "path-to-ligature-repo"
+  :config
+  (ligature-set-ligatures 'prog-mode '("<---" "<--"  "<<-" "<-" "->" "-->" "--->" "<->" "<-->" "<--->" "<---->" "<!--"
+                                       "<==" "<===" "<=" "=>" "=>>" "==>" "===>" ">=" "<=>" "<==>" "<===>" "<====>" "<!---"
+                                       "<~~" "<~" "~>" "~~>" "::" ":::" "==" "!=" "===" "!=="
+                                       ":=" ":-" ":+" "<*" "<*>" "*>" "<|" "<|>" "|>" "+:" "-:" "=:" "<******>" "++" "+++"))
+  (global-ligature-mode t))
+
 (dolist (hook '(text-mode-hook))
       (add-hook hook (lambda () (flyspell-mode 1))))
     (setq ispell-program-name "hunspell")
@@ -503,13 +512,13 @@
 (use-package visual-fill-column
   :hook (org-mode . angl/org-mode-visual-fill))
 
-(defun efs/org-babel-tangle-config ()
+(defun angl/org-babel-tangle-config ()
   (when (string-equal (file-name-directory (buffer-file-name))
                       (expand-file-name user-emacs-directory))
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
 
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'angl/org-babel-tangle-config)))
 
 (use-package term
   :commands term
@@ -529,6 +538,36 @@
 
   (straight-use-package
    '(vterm-toggle :type git :host github :repo "jixiuf/vterm-toggle"))
+
+(defun angl/configure-eshell ()
+  ;; Save command history when commands are entered
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+  ;; Truncate buffer for performance
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+  ;; Bind some useful keys for evil-mode
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+  (evil-normalize-keymaps)
+
+  (setq eshell-history-size         10000
+        eshell-buffer-maximum-lines 10000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell-git-prompt
+  :after eshell)
+
+(use-package eshell
+  :hook (eshell-first-time-mode . angl/configure-eshell)
+  :config
+
+  (with-eval-after-load 'esh-opt
+    (setq eshell-destroy-buffer-when-process-dies t)
+    (setq eshell-visual-commands '("htop" "zsh" "vim")))
+
+  (eshell-git-prompt-use-theme 'powerline))
 
 (use-package corfu
   :custom
@@ -576,7 +615,7 @@
         completion-category-defaults nil
         completion-category-overrides nil))
 
-(defun efs/lsp-mode-setup ()
+(defun angl/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode))
 
@@ -651,4 +690,5 @@
   ;; Terminales
   "t" '(:ignore t :which-key "Terminales")
   ; TODO tengo que arreglar vterm-toggle-cd, no funciona si la termina se deja abierta
-  "to" '(vterm-toggle-cd :which-key "Abrir vterm"))
+  "to" '(vterm-toggle-cd :which-key "Abrir vterm")
+  "te" '(eshell :which-key "Abrir eshell"))
