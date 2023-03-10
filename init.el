@@ -176,38 +176,12 @@
                                                      :v-adjust -0.05
                                                      :face 'font-lock-keyword-face))
 
-  (setq dashboard-navigator-buttons
-        `(
-          ((,(all-the-icons-octicon "octoface" :height 1.1 :v-adjust 0.0)
-            "Github"
-            "Ir a Angel-Emacs"
-            (lambda (&rest _) (browse-url "https://github.com/Tarbolin69/Angel-Emacs")) nil "" " |")
-           (,(all-the-icons-faicon "refresh" :height 1.1 :v-adjust 0.0)
-            "Actualizar"
-            "Actualizar Emacs"
-            (lambda (&rest _) (straight-pull-all)) warning "" " |")
-           (,(all-the-icons-faicon "flag" :height 1.1 :v-adjust 0.0) nil
-            "Reportar un BUG"
-            (lambda (&rest _) (browse-url "https://github.com/Tarbolin69/Angel-Emacs/issues/new")) error "" ""))
-          (("" "\n" "" nil nil "" ""))
-
-          ;; Keybindings
-          ((,(all-the-icons-octicon "search" :height 0.9 :v-adjust -0.1)
-            " Encontrar archivo" nil
-            (lambda (&rest _) (counsel-find-file)) nil "" "          C-x C-f"))
-          ((,(all-the-icons-octicon "file-directory" :height 1.0 :v-adjust -0.1)
-            " Abrir proyecto" nil
-            (lambda (&rest _) (counsel-projectile-switch-project)) nil "" "            C-x p d"))
-          ((,(all-the-icons-octicon "three-bars" :height 1.1 :v-adjust -0.1)
-            " Explorar proyectos" nil
-            (lambda (&rest _) (counsel-projectile-switch-project)) nil "" "        C-x p D"))))
-
   (setq
    dashboard-projects-backend 'project-el
    dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name
    dashboard-items '((recents        . 5)
-                     (projects       . 2)
-                     (agenda         . 3)))
+                     (agenda         . 3)
+                     (projects       . 2)))
   :custom-face
   (dashboard-heading ((t (:foreground nil :weight bold)))))
 
