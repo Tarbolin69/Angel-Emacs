@@ -6,7 +6,6 @@
 
 * Tabla de Contenidos                                                   :TOC:
 - [[#prefacio][Prefacio]]
-- [[#comenzar-el-servidor][Comenzar el servidor]]
 - [[#arreglar-custom-preferences][Arreglar "custom preferences"]]
 - [[#eliminar-archivos-temporales][Eliminar archivos temporales]]
 - [[#simplificar-yesno][Simplificar "yes/no"]]
@@ -35,6 +34,7 @@
   - [[#modos-de-org][Modos de Org]]
   - [[#paquete-org][Paquete Org]]
   - [[#org-toc][Org TOC]]
+  - [[#org-cliplink][Org Cliplink]]
   - [[#org-modern][Org Modern]]
   - [[#org-fancy-priorities][Org Fancy Priorities]]
   - [[#atajos-de-bloque][Atajos de Bloque]]
@@ -45,6 +45,7 @@
   - [[#org-babel-tangle][Org Babel Tangle]]
 - [[#terminales][Terminales]]
   - [[#term][Term]]
+  - [[#vterm][Vterm]]
 - [[#corfu][Corfu]]
 - [[#servidores-de-lenguajes--lista-de-sugestiones][Servidores de Lenguajes & Lista de Sugestiones]]
   - [[#orderless][Orderless]]
@@ -280,58 +281,6 @@ Siempre usa "11" para el tamaño de fuente al tomar capturas de pantalla con "sc
 ** Tablero
 El tablero que se ve al iniciar Emacs. Cambialo a tu gusto, o no.
 #+begin_src emacs-lisp
-  ;(use-package dashboard
-  ;  :straight t
-  ;  :init
-  ;  (progn
-  ;    (setq dashboard-center-content t)
-  ;    (setq dashboard-startup-banner "~/.emacs.d/imagenes/angel.png")
-  ;    (setq dashboard-set-file-icons t)
-  ;    (setq dashboard-banner-logo-title "PAX VOBISCUM")
-  ;    (setq dashboard-set-heading-icon t))
-  ;  :config
-  ;  (dashboard-setup-startup-hook)
-  ;(setq dashboard-navigator-buttons
-  ;      `(;; line1
-  ;        ((,(all-the-icons-octicon "octoface" :height 1.1 :v-adjust 0.0)
-  ;          "Github"
-  ;          "Ir a Pagina de Github"
-  ;          (lambda (&rest _) (browse-url "https://github.com/Tarbolin69/Angel-Emacs")) nil "" " |")
-  ;         (,(all-the-icons-faicon "refresh" :height 1.1 :v-adjust 0.0)
-  ;          "Actualizar"
-  ;          "Actualizar Emacs"
-  ;          (lambda (&rest _) (straight-pull-all)) warning "" " |")
-  ;         (,(all-the-icons-faicon "flag" :height 1.1 :v-adjust 0.0) nil
-  ;          "Reportar un BUG"
-  ;          (lambda (&rest _) (browse-url "https://github.com/Tarbolin69/Angel-Emacs/issues/new")) error "" ""))
-  ;        (("" "\n" "" nil nil "" ""))
-  ;
-  ;        ;; Keybindings
-  ;        ((,(all-the-icons-octicon "search" :height 0.9 :v-adjust -0.1)
-  ;          " Buscar archivos" nil
-  ;          (lambda (&rest _) (counsel-find-file)) nil "" "            C-x C-f"))
-  ;        ((,(all-the-icons-octicon "file-directory" :height 1.0 :v-adjust -0.1)
-  ;          " Abrir proyecto" nil
-  ;          (lambda (&rest _) (counsel-projectile-switch-project)) nil "" "         C-x p d"))
-  ;        ((,(all-the-icons-octicon "three-bars" :height 1.1 :v-adjust -0.1)
-  ;          " Explorador de archivos" nil
-  ;          (lambda (&rest _) (counsel-projectile-switch-project)) nil "" "        C-x p D"))
-  ;        ((,(all-the-icons-octicon "settings" :height 0.9 :v-adjust -0.1)
-  ;          " Abrir configuración" nil
-  ;          (lambda (&rest _) (open-config-file)) nil "" "        C-c e  "))))
-  ;(setq dashboard-items '((recents  . 3)
-  ;                        (projects . 3)
-  ;                        (agenda . 3)))
-  ;(setq dashboard-footer-messages '("Α Β Ρ Α Κ Α Δ Η Β Ρ Α"))
-  ;
-  ;
-  ;(setq dashboard-footer-icon (all-the-icons-wicon "sunrise"
-  ;                                                 :height 1.1
-  ;                                                 :v-adjust -0.05
-  ;                                                 :face 'font-lock-keyword-face))
-  ;(setq dashboard-item-names '(("Recent Files:" . "Archivos Recientes:")
-  ;                             ("Projects:" . "Proyectos:")
-  ;                             ("Agenda for the coming week:" . "Agenda para la semana:"))))
   (use-package dashboard
     :ensure t
     :after all-the-icons
@@ -384,7 +333,6 @@ El tablero que se ve al iniciar Emacs. Cambialo a tu gusto, o no.
      dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name
      dashboard-items '((recents        . 5)
                        (projects       . 2)
-                       (bookmarks      . 5)
                        (agenda         . 3)))
     :custom-face
     (dashboard-heading ((t (:foreground nil :weight bold)))))
@@ -617,6 +565,13 @@ Añade una tabla de contenidos auto-manejada a Emacs.
     (warn "toc-org not found"))
 #+end_src
 
+** Org Cliplink
+#+begin_src emacs-lisp
+  (straight-use-package
+   '(org-cliplink :type git :host github :repo "rexim/org-cliplink"))
+  (global-set-key (kbd "C-x p i") 'org-cliplink)
+#+end_src
+
 ** Org Modern
 Modo visual "moderno" para documentos org.
 #+begin_src emacs-lisp
@@ -794,7 +749,18 @@ Diferentes terminales para Emacs.
   (use-package eterm-256color
     :hook (term-mode . eterm-256color-mode))
 #+end_src
+** Vterm
+#+begin_src emacs-lisp
+  (use-package vterm
+    :commands vterm
+    :config
+    (setq term-prompt-regexp "%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[red]%}]%{$reset_color%}$%b")
+    (setq vterm-shell "zsh")
+    (setq vterm-max-scrollback 10000))
 
+    (straight-use-package
+     '(vterm-toggle :type git :host github :repo "jixiuf/vterm-toggle"))
+#+end_src
 * Corfu
 Sistema de autocompletacion moderno con integración para LSP y Ivy.
 #+begin_src emacs-lisp
@@ -947,11 +913,16 @@ Todos los atajos se encuentran aca. Cambiar a gusto.
     "oA" '(org-agenda :which-key "Abrir Agenda")
     "ot" '(counsel-org-tag :which-key "Añadir Etiquetas")
     "oc" '(org-capture :which-key "Notas Rapidas")
+    "oe" '(org-export-dispatch :which-key "Exportar")
     ;; Herramientas de Escritura     
     "w" '(:ignore t :which-key "Herramientas de Escritura")
     "wr" '(writeroom-mode :which-key "Alternar Modo de Escritura")
     ;; Elementos Visuales
     "v" '(:ignore t :which-key "Elementos Visuales")
     "vt" '(treemacs :which-key "Treemacs")
-    "vs" '(lsp-treemacs-symbols :which-key "LSP Treemacs"))
+    "vs" '(lsp-treemacs-symbols :which-key "LSP Treemacs")
+    ;; Terminales
+    "t" '(:ignore t :which-key "Terminales")
+    ; TODO tengo que arreglar vterm-toggle-cd, no funciona si la termina se deja abierta
+    "to" '(vterm-toggle-cd :which-key "Abrir vterm"))
 #+end_src

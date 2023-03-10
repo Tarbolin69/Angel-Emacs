@@ -155,58 +155,6 @@
   :hook (after-init . global-emojify-mode))
 (add-hook 'after-init-hook #'global-emojify-mode)
 
-;(use-package dashboard
-;  :straight t
-;  :init
-;  (progn
-;    (setq dashboard-center-content t)
-;    (setq dashboard-startup-banner "~/.emacs.d/imagenes/angel.png")
-;    (setq dashboard-set-file-icons t)
-;    (setq dashboard-banner-logo-title "PAX VOBISCUM")
-;    (setq dashboard-set-heading-icon t))
-;  :config
-;  (dashboard-setup-startup-hook)
-;(setq dashboard-navigator-buttons
-;      `(;; line1
-;        ((,(all-the-icons-octicon "octoface" :height 1.1 :v-adjust 0.0)
-;          "Github"
-;          "Ir a Pagina de Github"
-;          (lambda (&rest _) (browse-url "https://github.com/Tarbolin69/Angel-Emacs")) nil "" " |")
-;         (,(all-the-icons-faicon "refresh" :height 1.1 :v-adjust 0.0)
-;          "Actualizar"
-;          "Actualizar Emacs"
-;          (lambda (&rest _) (straight-pull-all)) warning "" " |")
-;         (,(all-the-icons-faicon "flag" :height 1.1 :v-adjust 0.0) nil
-;          "Reportar un BUG"
-;          (lambda (&rest _) (browse-url "https://github.com/Tarbolin69/Angel-Emacs/issues/new")) error "" ""))
-;        (("" "\n" "" nil nil "" ""))
-;
-;        ;; Keybindings
-;        ((,(all-the-icons-octicon "search" :height 0.9 :v-adjust -0.1)
-;          " Buscar archivos" nil
-;          (lambda (&rest _) (counsel-find-file)) nil "" "            C-x C-f"))
-;        ((,(all-the-icons-octicon "file-directory" :height 1.0 :v-adjust -0.1)
-;          " Abrir proyecto" nil
-;          (lambda (&rest _) (counsel-projectile-switch-project)) nil "" "         C-x p d"))
-;        ((,(all-the-icons-octicon "three-bars" :height 1.1 :v-adjust -0.1)
-;          " Explorador de archivos" nil
-;          (lambda (&rest _) (counsel-projectile-switch-project)) nil "" "        C-x p D"))
-;        ((,(all-the-icons-octicon "settings" :height 0.9 :v-adjust -0.1)
-;          " Abrir configuración" nil
-;          (lambda (&rest _) (open-config-file)) nil "" "        C-c e  "))))
-;(setq dashboard-items '((recents  . 3)
-;                        (projects . 3)
-;                        (agenda . 3)))
-;(setq dashboard-footer-messages '("Α Β Ρ Α Κ Α Δ Η Β Ρ Α"))
-;
-;
-;(setq dashboard-footer-icon (all-the-icons-wicon "sunrise"
-;                                                 :height 1.1
-;                                                 :v-adjust -0.05
-;                                                 :face 'font-lock-keyword-face))
-;(setq dashboard-item-names '(("Recent Files:" . "Archivos Recientes:")
-;                             ("Projects:" . "Proyectos:")
-;                             ("Agenda for the coming week:" . "Agenda para la semana:"))))
 (use-package dashboard
   :ensure t
   :after all-the-icons
@@ -259,7 +207,6 @@
    dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name
    dashboard-items '((recents        . 5)
                      (projects       . 2)
-                     (bookmarks      . 5)
                      (agenda         . 3)))
   :custom-face
   (dashboard-heading ((t (:foreground nil :weight bold)))))
@@ -440,6 +387,10 @@
       (add-hook 'org-mode-hook 'toc-org-mode))
   (warn "toc-org not found"))
 
+(straight-use-package
+ '(org-cliplink :type git :host github :repo "rexim/org-cliplink"))
+(global-set-key (kbd "C-x p i") 'org-cliplink)
+
 (use-package org-modern)
 
 (global-org-modern-mode)
@@ -591,6 +542,16 @@
 (use-package eterm-256color
   :hook (term-mode . eterm-256color-mode))
 
+(use-package vterm
+  :commands vterm
+  :config
+  (setq term-prompt-regexp "%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[red]%}]%{$reset_color%}$%b")
+  (setq vterm-shell "zsh")
+  (setq vterm-max-scrollback 10000))
+
+  (straight-use-package
+   '(vterm-toggle :type git :host github :repo "jixiuf/vterm-toggle"))
+
 (use-package corfu
   :custom
   (corfu-cycle t)
@@ -701,10 +662,15 @@
   "oA" '(org-agenda :which-key "Abrir Agenda")
   "ot" '(counsel-org-tag :which-key "Añadir Etiquetas")
   "oc" '(org-capture :which-key "Notas Rapidas")
+  "oe" '(org-export-dispatch :which-key "Exportar")
   ;; Herramientas de Escritura     
   "w" '(:ignore t :which-key "Herramientas de Escritura")
   "wr" '(writeroom-mode :which-key "Alternar Modo de Escritura")
   ;; Elementos Visuales
   "v" '(:ignore t :which-key "Elementos Visuales")
   "vt" '(treemacs :which-key "Treemacs")
-  "vs" '(lsp-treemacs-symbols :which-key "LSP Treemacs"))
+  "vs" '(lsp-treemacs-symbols :which-key "LSP Treemacs")
+  ;; Terminales
+  "t" '(:ignore t :which-key "Terminales")
+  ; TODO tengo que arreglar vterm-toggle-cd, no funciona si la termina se deja abierta
+  "to" '(vterm-toggle-cd :which-key "Abrir vterm"))
