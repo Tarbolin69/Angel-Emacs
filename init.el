@@ -47,7 +47,6 @@
   (load bootstrap-file nil 'nomessage))
 
 (straight-use-package 'use-package)
-(straight-use-package 'org)
 
 ;; Evita tener que escribir ":straight t" cada vez que se llama use-package
 (setq straight-use-package-by-default t)
@@ -61,11 +60,6 @@
 (set-face-attribute 'default nil :family "Iosevka" :height angl/default-font-size)
 (set-face-attribute 'fixed-pitch nil :family "Iosevka" :height angl/default-font-size)
 (set-face-attribute 'variable-pitch nil :family "Iosevka Comfy Duo" :height angl/default-font-size :weight 'regular)
-
-(org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (python . t)))
 
 (dolist (hook '(text-mode-hook))
       (add-hook hook (lambda () (flyspell-mode 1))))
@@ -340,6 +334,12 @@
   (org-indent-mode)
   (variable-pitch-mode 1)
   (visual-line-mode 1))
+(setq org-hide-emphasis-markers t
+      org-pretty-entities t
+      org-ellipsis "…"
+      org-auto-align-tags nil
+      org-tags-column 0
+      org-insert-heading-respect-content t)
 
 (use-package org
   :hook (org-mode . angl/org-mode-setup)
@@ -355,6 +355,11 @@
           "~/Org/Habitos.org"))
   org-hide-emphasis-markers t)
 
+(org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)))
+
 (use-package toc-org)
 (if (require 'toc-org nil t)
     (progn
@@ -364,6 +369,19 @@
 (straight-use-package
  '(org-cliplink :type git :host github :repo "rexim/org-cliplink"))
 (global-set-key (kbd "C-x p i") 'org-cliplink)
+
+(use-package org-superstar)
+(setq org-superstar-configure-like-org-bullets t)
+(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+(setq org-superstar-headline-bullets-list '("✢" "✿" "❁" "✾" "❀" "✤" "❖"))
+(setq org-superstar-special-todo-items t)
+(setq org-hide-leading-stars nil)
+(setq org-superstar-leading-bullet ?\s)
+(setq org-indent-mode-turns-on-hiding-stars nil)
+
+(use-package org-modern-indent
+  :straight (org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent"))
+(add-hook 'org-mode-hook #'org-modern-indent-mode 90)
 
 (use-package org-fancy-priorities
   :ensure t
@@ -465,26 +483,17 @@
        ;; Ejemplo:
        "| %U | %^{Peso} | %^{Notas} |" :kill-buffer t)))
 
-(use-package org-bullets
-  :hook (org-mode . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list '("✢" "✿" "❁" "✾" "❀" "✤" "❖")))
-
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
 (with-eval-after-load 'org-faces
-(set-face-attribute 'org-document-title nil :font "Iosevka Comfy Duo" :weight 'bold :height 1.3)
-(dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Iosevka Comfy Duo" :weight 'regular :height (cdr face))))
+ (set-face-attribute 'org-document-title nil :font "Iosevka Comfy Duo" :weight 'bold :height 1.3)
+ (dolist (face '((org-level-1 . 1.2)
+                   (org-level-2 . 1.1)
+                   (org-level-3 . 1.05)
+                   (org-level-4 . 1.0)
+                   (org-level-5 . 1.1)
+                   (org-level-6 . 1.1)
+                   (org-level-7 . 1.1)
+                   (org-level-8 . 1.1)))
+     (set-face-attribute (car face) nil :font "Iosevka Comfy Duo" :weight 'regular :height (cdr face))))
 
 (defun angl/org-mode-visual-fill ()
   (setq visual-fill-column-width 100
