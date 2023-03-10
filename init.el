@@ -185,8 +185,13 @@
    dashboard-items '((recents        . 5)
                      (agenda         . 3)
                      (projects       . 2)))
+
   :custom-face
   (dashboard-heading ((t (:foreground nil :weight bold)))))
+
+(setq dashboard-item-names '(("Recent Files:" . "Archivos Recientes:")
+                             ("Agenda for the coming week:" . "Agenda para la semana:")
+                             ("Projects:" . "Proyectos:")))
 
 (use-package writeroom-mode)
 
@@ -272,8 +277,8 @@
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/Programing") ;; Cambiar al tuyo
-    (setq projectile-project-search-path '("~/Programing")))
+  (when (file-directory-p "~/Programming") ;; Cambiar al tuyo
+    (setq projectile-project-search-path '("~/Programming")))
   (setq projectile-switch-project-action #'project-dired))
 
 (use-package counsel-projectile

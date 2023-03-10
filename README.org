@@ -6,6 +6,7 @@
 
 * Tabla de Contenidos                                                   :TOC:
 - [[#prefacio][Prefacio]]
+- [[#todos][TODOS]]
 - [[#arreglar-custom-preferences][Arreglar "custom preferences"]]
 - [[#eliminar-archivos-temporales][Eliminar archivos temporales]]
 - [[#simplificar-yesno][Simplificar "yes/no"]]
@@ -71,11 +72,16 @@ Para utilizar esta configuración, simplemente han de hacer lo siguiente en la t
   cd ~
   mv .emacs.d .emacs.d.bak # o borrenlo si asi prefieren
   git clone https://github.com/Tarbolin69/Angel-Emacs.git .emacs.d/
+  cd .emacs.d
+  touch custom.el
 #+end_src
 
-Después simplemente abran Emacs y dejen que los paquetes se instalen. Puede haber ciertos problemas con la instalación de Corfu, y si eso ocurre, instalenlo usando "M-x package-install"
+Después simplemente abran Emacs y dejen que los paquetes se instalen (quiza tengan que abrirlo un par de veces). Puede haber ciertos problemas con la instalación de Corfu, y si eso ocurre, instalenlo usando "M-x package-install"
 
 Funciona esto para MacOS o Windows? No tengo idea!
+
+* TODOS
+- [ ] Hacer un instalador
 
 * Arreglar "custom preferences"
 Este, mas que nada, es para evitar que Emacs añada basura en tu configuración. No te preocupes por este archivo. No lo mires y no existe.
@@ -312,8 +318,13 @@ El tablero que se ve al iniciar Emacs. Cambialo a tu gusto, o no.
      dashboard-items '((recents        . 5)
                        (agenda         . 3)
                        (projects       . 2)))
+
     :custom-face
     (dashboard-heading ((t (:foreground nil :weight bold)))))
+
+  (setq dashboard-item-names '(("Recent Files:" . "Archivos Recientes:")
+                               ("Agenda for the coming week:" . "Agenda para la semana:")
+                               ("Projects:" . "Proyectos:")))
 #+end_src
 
 * Escritura
@@ -422,8 +433,8 @@ Usa "projectile" para manejar proyectos (toda carpeta con .git en ella).
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/Programing") ;; Cambiar al tuyo
-    (setq projectile-project-search-path '("~/Programing")))
+  (when (file-directory-p "~/Programming") ;; Cambiar al tuyo
+    (setq projectile-project-search-path '("~/Programming")))
   (setq projectile-switch-project-action #'project-dired))
 
 (use-package counsel-projectile
